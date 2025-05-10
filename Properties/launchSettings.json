@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "VsExtensionsTool": {
+      "commandName": "Project",
+      "commandLineArgs": "/list /version"
+    }
+  }
+}
