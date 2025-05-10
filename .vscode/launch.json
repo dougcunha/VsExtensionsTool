@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "List",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/VsExtensionsTool.exe",
+            "args": ["/list", "ResXManager", "/version"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },{
+            "name": "ListVs",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/VsExtensionsTool.exe",
+            "args": ["/list_vs"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
+            "name": "Help",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/VsExtensionsTool.exe",
+            "args": ["/help"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        }
+    ]
+}
