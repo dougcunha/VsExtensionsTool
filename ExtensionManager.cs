@@ -17,22 +17,22 @@ public sealed class ExtensionInfo
     /// <summary>
     /// The display name of the extension.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; init; } = string.Empty;
 
     /// <summary>
     /// The unique identifier of the extension.
     /// </summary>
-    public string Id { get; set; } = string.Empty;
+    public string Id { get; init; } = string.Empty;
 
     /// <summary>
     /// The publisher of the extension.
     /// </summary>
-    public string Publisher { get; set; } = string.Empty;
+    public string Publisher { get; init; } = string.Empty;
 
     /// <summary>
     /// The version of the extension.
     /// </summary>
-    public string Version { get; set; } = string.Empty;
+    public string Version { get; init; } = string.Empty;
 }
 
 /// <summary>
