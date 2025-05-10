@@ -27,7 +27,7 @@ If the Marketplace version check stops working, it is likely due to changes in t
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-username/VsExtensionsTool.git
+   git clone https://github.com/dougcunha/VsExtensionsTool.git
    cd VsExtensionsTool
    ```
 
@@ -54,6 +54,20 @@ VsExtensionsTool.exe /remove <id>
 - `/list_vs`: Lists all Visual Studio installations
 - `/list`: Lists extensions for the selected instance (optionally filter by name/id, `/version` shows Marketplace version)
 - `/remove <id>`: Removes an extension by id
+
+## Screenshots
+
+### Help
+
+![Help](images/help.png)
+
+### Listing Extensions
+
+![Listing Extensions](images/list-extensions.png)
+
+### Removing Extension
+
+![Removing Extension](images/remove-extension.png)
 
 ## Dependencies
 
