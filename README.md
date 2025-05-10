@@ -53,6 +53,12 @@ If the Marketplace version check stops working, it is likely due to changes in t
    dotnet build -c Release
    ```
 
+4. Publish as single-file
+
+    ```sh
+    dotnet publish -c Release -o C:\output\
+    ```
+
 ## Usage
 
 ```sh
