@@ -1,6 +1,16 @@
 # VsExtensionsTool
 
-Command-line tool to list, filter, and remove Visual Studio extensions.
+## Table of Contents
+
+- [Motivation](#motivation)
+- [Features](#features)
+- [Marketplace API Disclaimer](#marketplace-api-disclaimer)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Screenshots](#screenshots)
+- [Dependencies](#dependencies)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Motivation
 
