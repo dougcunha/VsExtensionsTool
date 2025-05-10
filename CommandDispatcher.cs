@@ -22,19 +22,19 @@ public sealed class CommandDispatcher
 
         _aliases = new Dictionary<string, string>
         {
-            {"--help", "/help"},
-            {"--list", "/list"},
-            {"--list_vs", "/list_vs"},
-            {"--remove", "/remove"},
-            {"--version", "/version"},
-            {"--id", "/id"}
+            { "--help", "/help" },
+            { "--list", "/list" },
+            { "--list_vs", "/list_vs" },
+            { "--remove", "/remove" },
+            { "--version", "/version" },
+            { "--id", "/id" }
         };
     }
 
     /// <summary>
-    /// Registers all available commands.
+    /// Create all available commands.
     /// </summary>
-    private List<ICommand> RegisterCommands()
+    private static List<ICommand> CreateCommands()
     {
         var commands = new List<ICommand>
         {
@@ -93,7 +93,7 @@ public sealed class CommandDispatcher
                 _extManager.SetInstanceInfo(selectedInstance.InstanceId!, selectedInstance.InstallationVersion!);
 
             var context = new CommandContext(args, _vsManager, _extManager, selectedInstance);
-            var commands = RegisterCommands().Where(command => command.CanExecute(context)).ToList();
+            var commands = CreateCommands().Where(command => command.CanExecute(context)).ToList();
 
             if (commands.Count == 0)
             {
