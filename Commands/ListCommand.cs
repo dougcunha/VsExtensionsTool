@@ -19,7 +19,7 @@ public sealed class ListCommand : ICommand
 
     /// <inheritdoc />
     public string Description
-        => "List all extensions for the selected instance, optionally filtered by name or id. Use /version to show the latest version from the marketplace.";
+        => "List all extensions for the selected instance, optionally filtered by name or id. Use /version to show the latest version from the marketplace. Use /outdated to show only outdated extensions.";
 
     /// <inheritdoc />
     public bool CanExecute(CommandContext context)
@@ -29,7 +29,7 @@ public sealed class ListCommand : ICommand
 
     private void PopulateExtensionInfos(CommandContext context)
     {
-        var filter = context.Args.Skip(1).FirstOrDefault(static arg => arg != "/version");
+        var filter = context.Args.Skip(1).FirstOrDefault(static arg => arg != "/version" && arg != "/outdated");
         _extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!);
 
         if (string.IsNullOrWhiteSpace(filter))
@@ -63,13 +63,13 @@ public sealed class ListCommand : ICommand
         const string MARKETPLACE_HEADER = "Marketplace";
         const string NUMBER_HEADER = "#";
         var showMarketplaceVersion = context.Args.Any(static arg => arg == "/version");
+        var showOnlyOutdated = context.Args.Any(static arg => arg == "/outdated");
 
         PopulateExtensionInfos(context);
 
         if (_extensions is null || _extensions.Count == 0)
         {
             AnsiConsole.MarkupLine($"[red]{NO_EXTENSIONS_FOUND}[/]");
-
             return;
         }
 
@@ -78,20 +78,18 @@ public sealed class ListCommand : ICommand
         table.AddColumn(NAME_HEADER);
         table.AddColumn(PUBLISHER_HEADER);
         table.AddColumn(INSTALLED_HEADER);
-
-        if (showMarketplaceVersion)
+        if (showMarketplaceVersion || showOnlyOutdated)
             table.AddColumn(MARKETPLACE_HEADER);
 
         var index = 1;
 
         await AnsiConsole.Live(table)
-            .StartAsync
-            (
+            .StartAsync(
                 async ctx =>
                 {
                     foreach (var ext in _extensions)
                     {
-                        await AddToTableAsync(table, showMarketplaceVersion, index, ext, context).ConfigureAwait(false);
+                        await AddToTableAsync(table, showMarketplaceVersion, showOnlyOutdated, index, ext, context).ConfigureAwait(false);
                         ctx.Refresh();
                         index++;
                     }
@@ -99,38 +97,46 @@ public sealed class ListCommand : ICommand
             ).ConfigureAwait(false);
     }
 
-    private static async Task AddToTableAsync(Table table, bool showMarketplaceVersion, int index, ExtensionInfo ext, CommandContext context)
+    private static async Task AddToTableAsync(Table table, bool showMarketplaceVersion, bool showOnlyOutdated, int index, ExtensionInfo ext, CommandContext context)
     {
         var name = Markup.Escape(ext.Name);
         var publisher = Markup.Escape(ext.Publisher);
         var version = Markup.Escape(ext.Version);
 
-        if (!showMarketplaceVersion)
+        if (!showMarketplaceVersion && !showOnlyOutdated)
         {
             table.AddRow(index.ToString(), name, publisher, version);
-
             return;
         }
 
-        var lastestVersion = Markup.Escape(await MarketplaceHelper.GetLatestExtensionVersionAsync(ext, context.VisualStudioInstance!).ConfigureAwait(false));
-        var isUpdateAvailable = !string.Equals(ext.Version, lastestVersion, StringComparison.OrdinalIgnoreCase) && lastestVersion != "Not found";
+        var latestVersion = Markup.Escape(await MarketplaceHelper.GetLatestExtensionVersionAsync(ext, context.VisualStudioInstance!).ConfigureAwait(false));
+        var isOutdated = !string.Equals(ext.Version, latestVersion, StringComparison.OrdinalIgnoreCase) && latestVersion != "Not found";
 
-        if (isUpdateAvailable)
+        if (showOnlyOutdated && !isOutdated)
+        {
+            return;
+        }
+
+        if (isOutdated)
         {
             table.AddRow(
                 $"[yellow]{index}[/]",
                 $"[yellow]{name}[/]",
                 $"[yellow]{publisher}[/]",
                 $"[yellow]{version}[/]",
-                $"[yellow]{lastestVersion}[/]");
+                $"[yellow]{latestVersion}[/]");
+        }
+        else if (showMarketplaceVersion)
+        {
+            table.AddRow(index.ToString(), name, publisher, version, latestVersion);
         }
         else
         {
-            table.AddRow(index.ToString(), name, publisher, version, lastestVersion);
+            table.AddRow(index.ToString(), name, publisher, version);
         }
     }
 
     /// <inheritdoc />
     public void PrintHelp()
-        => Console.WriteLine($"{Name} [filter] [/version]   {Description}");
+        => Console.WriteLine($"{Name} [filter] [/version] [/outdated]   {Description}");
 }
