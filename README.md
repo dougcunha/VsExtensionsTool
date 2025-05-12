@@ -63,12 +63,12 @@ If the Marketplace version check stops working, it is likely due to changes in t
 
 ```sh
 VsExtensionsTool.exe /list_vs
-VsExtensionsTool.exe /list [filter] [/version]
+VsExtensionsTool.exe /list [filter] [/version] [/outdated]
 VsExtensionsTool.exe /remove <id>
 ```
 
 - `/list_vs`: Lists all Visual Studio installations
-- `/list`: Lists extensions for the selected instance (optionally filter by name/id, `/version` shows Marketplace version)
+- `/list`: Lists extensions for the selected instance (optionally filter by name/id, `/version` shows Marketplace version, `/outdated` shows only outdated extensions)
 - `/remove <id>`: Removes an extension by id
 
 ## Screenshots
