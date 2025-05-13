@@ -24,6 +24,7 @@ I do not plan to add support for VSCode, as its extension management interface i
 - List installed extensions, with optional filtering by name or id
 - Show installed version and latest version available on the Marketplace
 - Remove extensions by id
+- Update extensions
 - Beautiful and interactive console output powered by [Spectre.Console](https://spectreconsole.net/)
 
 ## Marketplace API Disclaimer
