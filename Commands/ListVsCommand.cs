@@ -14,16 +14,18 @@ public sealed class ListVsCommand : ICommand
         => "List all Visual Studio installations.";
 
     /// <inheritdoc />
+    public bool NeedsVsInstance
+        => false;
+
+    /// <inheritdoc />
     public bool CanExecute(CommandContext context)
         => context.Args.Length > 0 && context.Args[0] == "/list_vs";
 
     /// <inheritdoc />
-    public Task ExecuteAsync(CommandContext context)
+    public async Task ExecuteAsync(CommandContext context)
     {
-        var installations = context.VisualStudioManager.GetVisualStudioInstallations();
+        var installations = await context.VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
         VisualStudioDisplayHelper.PrintInstallationsTable(installations);
-
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc />

@@ -6,10 +6,20 @@
             "type": "coreclr",
             "request": "launch",
             "program": "${workspaceFolder}/bin/Debug/net10.0/VsExtensionsTool.exe",
-            "args": ["/list", "ResXManager", "/version"],
+            "args": ["/list", "/outdated", "/version"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
-        },{
+        },
+        {
+            "name": "Update",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/Debug/net10.0/VsExtensionsTool.exe",
+            "args": ["/update"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
             "name": "ListVs",
             "type": "coreclr",
             "request": "launch",

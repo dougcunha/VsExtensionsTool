@@ -42,7 +42,7 @@ public static class MarketplaceHelper
     /// <param name="extension">The extension info.</param>
     /// <param name="vsInstance">The selected instance of Visual Studio.</param>
     /// <returns>The latest version string, or "Not found" if not available.</returns>
-    public static async Task<string> GetLatestExtensionVersionAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
+    public static async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
     {
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Accept", "application/json;api-version=" + MARKETPLACE_API_VERSION);
@@ -76,7 +76,7 @@ public static class MarketplaceHelper
                     sortOrder = 0
                 }
             },
-            flags = ExtensionQueryFlags.IncludeLatestVersionOnly
+            flags = ExtensionQueryFlags.IncludeLatestVersionOnly | ExtensionQueryFlags.IncludeFiles | ExtensionQueryFlags.IncludeVersions,
         };
 
         var json = JsonSerializer.Serialize(payload);
@@ -88,23 +88,21 @@ public static class MarketplaceHelper
 
             if (response.IsSuccessStatusCode)
             {
-                var version = await TryExtractVersionAsync(response).ConfigureAwait(false);
+                var (version, url) = await TryExtractVersionAndVsixUrlAsync(response).ConfigureAwait(false);
 
-                if (!string.IsNullOrEmpty(version))
-                    return version;
+                extension.LatestVersion = version ?? "Not found";
+                extension.VsixUrl = url;
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error occurred while fetching the latest version." + ex.Message);
         }
-
-        return "Not found";
     }
 
     private static readonly string[] _encodings = ["gzip", "br", "deflate"];
 
-    private static readonly Dictionary<string, Func<Stream, Stream>>  _streamFactory = new()
+    private static readonly Dictionary<string, Func<Stream, Stream>> _streamFactory = new()
     {
         ["gzip"] = static res => new GZipStream(res, CompressionMode.Decompress),
         ["br"] = static res => new BrotliStream(res, CompressionMode.Decompress),
@@ -123,7 +121,7 @@ public static class MarketplaceHelper
         return await reader.ReadToEndAsync().ConfigureAwait(false);
     }
 
-    private static async Task<string?> TryExtractVersionAsync(HttpResponseMessage response)
+    private static async Task<(string? version, string? vsixUrl)> TryExtractVersionAndVsixUrlAsync(HttpResponseMessage response)
     {
         var responseString = await GetResponseStringAsync(response).ConfigureAwait(false);
 
@@ -132,17 +130,35 @@ public static class MarketplaceHelper
         var results = root.GetProperty("results");
 
         if (results.GetArrayLength() == 0)
-            return null;
+            return (null, null);
 
         var extensions = results[0].GetProperty("extensions");
 
         if (extensions.GetArrayLength() == 0)
-            return null;
+            return (null, null);
 
         var versions = extensions[0].GetProperty("versions");
 
-        return versions.GetArrayLength() == 0
-            ? null
-            : versions[0].GetProperty("version").GetString();
+        if (versions.GetArrayLength() == 0)
+            return (null, null);
+
+        var version = versions[0].GetProperty("version").GetString();
+        string? vsixUrl = null;
+
+        if (!versions[0].TryGetProperty("properties", out var properties))
+            return (version, vsixUrl);
+
+        foreach (var property in properties.EnumerateArray())
+        {
+            if (!property.TryGetProperty("key", out var propertyType)
+                || propertyType.GetString() != "DownloadUpdateUrl")
+                continue;
+
+            vsixUrl = property.GetProperty("value").GetString();
+
+            break;
+        }
+
+        return (version, vsixUrl);
     }
 }

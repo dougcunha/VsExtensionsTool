@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -30,9 +29,25 @@ public sealed class ExtensionInfo
     public string Publisher { get; init; } = string.Empty;
 
     /// <summary>
-    /// The version of the extension.
+    /// The version of the installed extension.
     /// </summary>
-    public string Version { get; init; } = string.Empty;
+    public string InstalledVersion { get; init; } = string.Empty;
+
+    /// <summary>
+    /// The version of the extension on marketplace.
+    /// </summary>
+    public string LatestVersion { get; set; } = "Not found";
+
+    /// <summary>
+    /// The URL to download the extension from the marketplace.
+    /// </summary>
+    public string? VsixUrl { get; set; }
+
+    /// <summary>
+    /// If the extension version is outdated.
+    /// </summary>
+    public bool IsOutdated
+        => !string.Equals(InstalledVersion, LatestVersion, StringComparison.OrdinalIgnoreCase) && LatestVersion != "Not found";
 }
 
 /// <summary>
@@ -187,7 +202,7 @@ public sealed class ExtensionManager
             var publisher = identity?.Attribute("Publisher")?.Value ?? "";
             var name = metadata.Element(ns + "DisplayName")?.Value ?? "";
             var version = identity?.Attribute("Version")?.Value ?? "";
-            var extensionInfo = new ExtensionInfo { Name = name, Id = id, Publisher = publisher, Version = version };
+            var extensionInfo = new ExtensionInfo { Name = name, Id = id, Publisher = publisher, InstalledVersion = version };
             PopulateFromManifestJson(manifestPath, extensionInfo);
 
             return extensionInfo;

@@ -69,25 +69,31 @@ public sealed class VisualStudioManager
     /// Gets all Visual Studio installations on the system, including Preview versions.
     /// </summary>
     /// <returns>List of VisualStudioInstance objects representing each installation.</returns>
-    public List<VisualStudioInstance> GetVisualStudioInstallations()
+    public async Task<List<VisualStudioInstance>> GetVisualStudioInstallationsAsync()
     {
-        var vswherePath = Environment.ExpandEnvironmentVariables(VSWHERE_PATH);
+        var output = string.Empty;
 
-        var process = new System.Diagnostics.Process
-        {
-            StartInfo = new System.Diagnostics.ProcessStartInfo
+        await AnsiConsole.Status()
+            .Spinner(Spinner.Known.Dots2)
+            .SpinnerStyle(Style.Parse("green"))
+            .StartAsync("[green]Detectando instalações do Visual Studio...[/]", async t =>
             {
-                FileName = vswherePath,
-                Arguments = VSWHERE_ARGS,
-                RedirectStandardOutput = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            }
-        };
+                var vswherePath = Environment.ExpandEnvironmentVariables(VSWHERE_PATH);
+                using var process = new Process();
 
-        process.Start();
-        string output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit();
+                process.StartInfo = new ProcessStartInfo
+                {
+                    FileName = vswherePath,
+                    Arguments = VSWHERE_ARGS,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                process.Start();
+                output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
+                await process.WaitForExitAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
 
         if (string.IsNullOrWhiteSpace(output))
             return [];

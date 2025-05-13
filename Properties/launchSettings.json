@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "VsExtensionsTool": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "ListVersion": {
       "commandName": "Project",
       "commandLineArgs": "/list /version"
+    },
+    "Update": {
+      "commandName": "Project",
+      "commandLineArgs": "/update"
     }
   }
 }

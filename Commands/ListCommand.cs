@@ -22,10 +22,13 @@ public sealed class ListCommand : ICommand
         => "List all extensions for the selected instance, optionally filtered by name or id. Use /version to show the latest version from the marketplace. Use /outdated to show only outdated extensions.";
 
     /// <inheritdoc />
+    public bool NeedsVsInstance
+        => true;
+
+    /// <inheritdoc />
     public bool CanExecute(CommandContext context)
         => context.Args.Length > 0
-            && context.Args[0] == "/list"
-            && context.VisualStudioInstance != null;
+            && context.Args[0] == "/list";
 
     private void PopulateExtensionInfos(CommandContext context)
     {
@@ -56,12 +59,6 @@ public sealed class ListCommand : ICommand
     /// <inheritdoc />
     public async Task ExecuteAsync(CommandContext context)
     {
-        const string NO_EXTENSIONS_FOUND = "No extensions found.";
-        const string NAME_HEADER = "Name";
-        const string PUBLISHER_HEADER = "Publisher";
-        const string INSTALLED_HEADER = "Installed";
-        const string MARKETPLACE_HEADER = "Marketplace";
-        const string NUMBER_HEADER = "#";
         var showMarketplaceVersion = context.Args.Any(static arg => arg == "/version");
         var showOnlyOutdated = context.Args.Any(static arg => arg == "/outdated");
 
@@ -69,71 +66,17 @@ public sealed class ListCommand : ICommand
 
         if (_extensions is null || _extensions.Count == 0)
         {
-            AnsiConsole.MarkupLine($"[red]{NO_EXTENSIONS_FOUND}[/]");
+            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
             return;
         }
 
-        var table = new Table().Border(TableBorder.Rounded);
-        table.AddColumn(NUMBER_HEADER);
-        table.AddColumn(NAME_HEADER);
-        table.AddColumn(PUBLISHER_HEADER);
-        table.AddColumn(INSTALLED_HEADER);
-        if (showMarketplaceVersion || showOnlyOutdated)
-            table.AddColumn(MARKETPLACE_HEADER);
-
-        var index = 1;
-
-        await AnsiConsole.Live(table)
-            .StartAsync(
-                async ctx =>
-                {
-                    foreach (var ext in _extensions)
-                    {
-                        await AddToTableAsync(table, showMarketplaceVersion, showOnlyOutdated, index, ext, context).ConfigureAwait(false);
-                        ctx.Refresh();
-                        index++;
-                    }
-                }
-            ).ConfigureAwait(false);
-    }
-
-    private static async Task AddToTableAsync(Table table, bool showMarketplaceVersion, bool showOnlyOutdated, int index, ExtensionInfo ext, CommandContext context)
-    {
-        var name = Markup.Escape(ext.Name);
-        var publisher = Markup.Escape(ext.Publisher);
-        var version = Markup.Escape(ext.Version);
-
-        if (!showMarketplaceVersion && !showOnlyOutdated)
-        {
-            table.AddRow(index.ToString(), name, publisher, version);
-            return;
-        }
-
-        var latestVersion = Markup.Escape(await MarketplaceHelper.GetLatestExtensionVersionAsync(ext, context.VisualStudioInstance!).ConfigureAwait(false));
-        var isOutdated = !string.Equals(ext.Version, latestVersion, StringComparison.OrdinalIgnoreCase) && latestVersion != "Not found";
-
-        if (showOnlyOutdated && !isOutdated)
-        {
-            return;
-        }
-
-        if (isOutdated)
-        {
-            table.AddRow(
-                $"[yellow]{index}[/]",
-                $"[yellow]{name}[/]",
-                $"[yellow]{publisher}[/]",
-                $"[yellow]{version}[/]",
-                $"[yellow]{latestVersion}[/]");
-        }
-        else if (showMarketplaceVersion)
-        {
-            table.AddRow(index.ToString(), name, publisher, version, latestVersion);
-        }
-        else
-        {
-            table.AddRow(index.ToString(), name, publisher, version);
-        }
+        await ExtensionListDisplayHelper.DisplayExtensionsAsync
+        (
+            _extensions,
+            context,
+            showMarketplaceVersion: showMarketplaceVersion,
+            showOnlyOutdated: showOnlyOutdated
+        ).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

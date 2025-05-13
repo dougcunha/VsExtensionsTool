@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using VsExtensionsTool.Commands;
-
 namespace VsExtensionsTool;
 
 /// <summary>
@@ -27,6 +24,8 @@ public sealed class CommandDispatcher
             { "--list_vs", "/list_vs" },
             { "--remove", "/remove" },
             { "--version", "/version" },
+            { "--outdated", "/outdated" },
+            { "--update", "/update" },
             { "--id", "/id" }
         };
     }
@@ -41,6 +40,7 @@ public sealed class CommandDispatcher
             new ListVsCommand(),
             new ListCommand(),
             new RemoveCommand(),
+            new UpdateCommand(),
         };
 
         commands.Add(new HelpCommand(commands));
@@ -51,14 +51,9 @@ public sealed class CommandDispatcher
     /// <summary>
     /// Selects the Visual Studio instance, if necessary.
     /// </summary>
-    private VisualStudioInstance? SelectVisualStudioInstance(string[] args)
+    private async Task<VisualStudioInstance?> SelectVisualStudioInstanceAsync()
     {
-        var needsVsInstance = args.Length > 0 && (args[0] == "/list" || args[0] == "/remove");
-
-        if (!needsVsInstance)
-            return null;
-
-        var installations = _vsManager.GetVisualStudioInstallations();
+        var installations = await _vsManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
 
         if (installations.Count == 0)
         {
@@ -71,13 +66,12 @@ public sealed class CommandDispatcher
             return installations[0];
 
         VisualStudioDisplayHelper.PrintInstallationsTable(installations, false);
-        Console.Write("Enter the number of the desired installation: ");
+        var choice = AnsiConsole.Ask<int>("Enter the number of the desired installation (0 to cancel): ");
 
-        if (int.TryParse(Console.ReadLine(), out var choice) && choice > 0 && choice <= installations.Count)
+        if (choice > 0 && choice <= installations.Count)
             return installations[choice - 1];
 
-        Console.WriteLine("Invalid option.");
-
+        AnsiConsole.WriteLine("Invalid option.");
         return null;
     }
 
@@ -86,23 +80,35 @@ public sealed class CommandDispatcher
         try
         {
             args = [.. args.Select(a => _aliases.GetValueOrDefault(a, a))];
+            var context = new CommandContext(args, _vsManager, _extManager, null);
+            var commands = CreateCommands();
+            var needsVsInstance = commands.Any(c => c.CanExecute(context) && c.NeedsVsInstance);
 
-            var selectedInstance = SelectVisualStudioInstance(args);
-
-            if (selectedInstance != null)
-                _extManager.SetInstanceInfo(selectedInstance.InstanceId!, selectedInstance.InstallationVersion!);
-
-            var context = new CommandContext(args, _vsManager, _extManager, selectedInstance);
-            var commands = CreateCommands().Where(command => command.CanExecute(context)).ToList();
-
-            if (commands.Count == 0)
+            if (needsVsInstance)
             {
-                Console.WriteLine("No command found. Use /help to see the options.");
+                var selectedInstance = await SelectVisualStudioInstanceAsync().ConfigureAwait(false);
+
+                if (selectedInstance == null)
+                {
+                    AnsiConsole.WriteLine("No Visual Studio instance selected. Exiting.");
+
+                    return;
+                }
+
+                context.VisualStudioInstance = selectedInstance;
+                _extManager.SetInstanceInfo(selectedInstance.InstanceId!, selectedInstance.InstallationVersion!);
+            }
+
+            var commandsToRun = commands.Where(command => command.CanExecute(context)).ToList();
+
+            if (commandsToRun.Count == 0)
+            {
+                AnsiConsole.WriteLine("No command found. Use /help to see the options.");
 
                 return;
             }
 
-            foreach (var command in commands)
+            foreach (var command in commandsToRun)
                 await command.ExecuteAsync(context).ConfigureAwait(false);
         }
         finally

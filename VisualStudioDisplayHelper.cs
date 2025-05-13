@@ -7,7 +7,7 @@ public static class VisualStudioDisplayHelper
 {
     private const string NUMBER_HEADER = "#";
     private const string NAME_HEADER = "Name";
-    private const string VERSION_HEADER = "Version";
+    private const string VERSION_HEADER = "InstalledVersion";
     private const string PREVIEW_LABEL = " (Preview)";
     private const string NO_INSTALLATION_FOUND = "No Visual Studio installation found.";
     private const string DETECTED_INSTALLATIONS = "Detected Visual Studio installations:";
