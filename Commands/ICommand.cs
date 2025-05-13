@@ -13,6 +13,14 @@ public interface ICommand
     Task ExecuteAsync(CommandContext context);
 
     /// <summary>
+    /// Determines whether the help option is specified in the provided arguments.
+    /// </summary>
+    /// <param name="args">An array of command-line arguments to check for help options.</param>
+    /// <returns><see langword="true"/> if the arguments contain "/help" or "--help"; otherwise, <see langword="false"/>.</returns>
+    static bool ShowHelp(string[] args)
+        => args.Length > 1 && (args.Contains("/help") || args.Contains("--help"));
+
+    /// <summary>
     /// Prints help information for the command.
     /// </summary>
     void PrintHelp();

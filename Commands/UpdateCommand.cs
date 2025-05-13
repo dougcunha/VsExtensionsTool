@@ -22,6 +22,13 @@ public sealed class UpdateCommand : ICommand
 
     public async Task ExecuteAsync(CommandContext context)
     {
+        if (ICommand.ShowHelp(context.Args))
+        {
+            PrintHelp();
+
+            return;
+        }
+
         var extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!);
         AnsiConsole.MarkupLine("[bold]Checking for outdated extensions...[/]");
 

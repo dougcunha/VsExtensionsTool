@@ -12,7 +12,7 @@ public static class MarketplaceHelper
     private const int FILTERTYPE_PUBLISHER = 7;
 
     [Flags]
-    private enum ExtensionQueryFlags
+    private enum ExtensionQueryOptions
     {
         // ReSharper disable InconsistentNaming
         // ReSharper disable UnusedMember.Local
@@ -76,7 +76,7 @@ public static class MarketplaceHelper
                     sortOrder = 0
                 }
             },
-            flags = ExtensionQueryFlags.IncludeLatestVersionOnly | ExtensionQueryFlags.IncludeFiles | ExtensionQueryFlags.IncludeVersions,
+            flags = ExtensionQueryOptions.IncludeLatestVersionOnly | ExtensionQueryOptions.IncludeFiles | ExtensionQueryOptions.IncludeVersions,
         };
 
         var json = JsonSerializer.Serialize(payload);
@@ -96,7 +96,7 @@ public static class MarketplaceHelper
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error occurred while fetching the latest version." + ex.Message);
+            AnsiConsole.MarkupLine($"[red]Error occurred while fetching the latest version. {ex.Message.EscapeMarkup()}[/]");
         }
     }
 

@@ -25,6 +25,13 @@ public sealed class RemoveCommand : ICommand
     /// <inheritdoc />
     public async Task ExecuteAsync(CommandContext context)
     {
+        if (ICommand.ShowHelp(context.Args))
+        {
+            PrintHelp();
+
+            return;
+        }
+
         var args = context.Args;
         (string id, bool direct, string filter) = ParseArgs(args);
 
@@ -98,5 +105,5 @@ public sealed class RemoveCommand : ICommand
 
     /// <inheritdoc />
     public void PrintHelp()
-        => Console.WriteLine($"{Name} [<filter>] [/id <id>]   {Description}");
+        => AnsiConsole.WriteLine(Markup.Escape($"{Name} [<filter>] [/id <id>]   {Description}"));
 }

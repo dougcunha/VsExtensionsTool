@@ -66,12 +66,11 @@ public sealed class CommandDispatcher
             return installations[0];
 
         VisualStudioDisplayHelper.PrintInstallationsTable(installations, false);
-        var choice = AnsiConsole.Ask<int>("Enter the number of the desired installation (0 to cancel): ");
+        var choice = await AnsiConsole.AskAsync<int>("Enter the number of the desired installation (0 to cancel): ").ConfigureAwait(false);
 
         if (choice > 0 && choice <= installations.Count)
             return installations[choice - 1];
 
-        AnsiConsole.WriteLine("Invalid option.");
         return null;
     }
 
@@ -82,7 +81,7 @@ public sealed class CommandDispatcher
             args = [.. args.Select(a => _aliases.GetValueOrDefault(a, a))];
             var context = new CommandContext(args, _vsManager, _extManager, null);
             var commands = CreateCommands();
-            var needsVsInstance = commands.Any(c => c.CanExecute(context) && c.NeedsVsInstance);
+            var needsVsInstance = !ICommand.ShowHelp(args) && commands.Any(c => c.CanExecute(context) && c.NeedsVsInstance);
 
             if (needsVsInstance)
             {
@@ -115,7 +114,7 @@ public sealed class CommandDispatcher
         {
             if (Debugger.IsAttached)
             {
-                Console.WriteLine("Press any key to exit...");
+                AnsiConsole.WriteLine("Press any key to exit...");
                 Console.Read();
             }
         }

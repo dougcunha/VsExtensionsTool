@@ -111,7 +111,7 @@ public sealed class ExtensionManager
 
         if (!File.Exists(vsixInstallerPath))
         {
-            Console.WriteLine("VSIXInstaller.exe not found in this installation.");
+            AnsiConsole.MarkupLine("[red]VSIXInstaller.exe not found in this installation.[/]");
 
             return;
         }
@@ -121,7 +121,7 @@ public sealed class ExtensionManager
 
         if (extension == null)
         {
-            Console.WriteLine("Extension not found.");
+            AnsiConsole.MarkupLine("[red]Extension not found.[/]");
 
             return;
         }
@@ -140,8 +140,8 @@ public sealed class ExtensionManager
         process.Start();
         string output = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
-        Console.WriteLine(output);
-        Console.WriteLine($"Extension '{extension.Name}' removed (Id: {extension.Id}).");
+        AnsiConsole.MarkupLine(Markup.Escape(output));
+        AnsiConsole.MarkupLine($"Extension '{extension.Name.EscapeMarkup()}' removed (Id: {extension.Id.EscapeMarkup()}).");
     }
 
     /// <summary>
@@ -209,7 +209,7 @@ public sealed class ExtensionManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error occurred while reading the manifest file." + ex.Message);
+            AnsiConsole.MarkupLine($"[red]Error occurred while reading the manifest file. {ex.Message.EscapeMarkup()}[/]");
 
             return null;
         }
@@ -231,7 +231,7 @@ public sealed class ExtensionManager
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error occurred while reading the manifest file." + ex.Message);
+            AnsiConsole.MarkupLine($"[red]Error occurred while reading the manifest file. {ex.Message.EscapeMarkup()}[/]");
         }
     }
 }
