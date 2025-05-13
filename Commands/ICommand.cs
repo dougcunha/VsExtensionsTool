@@ -33,4 +33,9 @@ public interface ICommand
     /// <param name="context">The command context.</param>
     /// <returns>True if the command should execute, otherwise false.</returns>
     bool CanExecute(CommandContext context);
+
+    /// <summary>
+    /// Indicates if the command requires a Visual Studio instance.
+    /// </summary>
+    bool NeedsVsInstance { get; }
 }

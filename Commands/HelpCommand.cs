@@ -6,6 +6,10 @@ namespace VsExtensionsTool.Commands;
 public sealed class HelpCommand : ICommand
 {
     private readonly List<ICommand> _commands;
+    private const string TITLE = "VsExtensionsTool";
+    private const string SUBTITLE = "Visual Studio Extensions Manager";
+    private const string COMMAND_HEADER = "Command";
+    private const string DESCRIPTION_HEADER = "Description";
 
     /// <inheritdoc />
     public string Name
@@ -13,7 +17,11 @@ public sealed class HelpCommand : ICommand
 
     /// <inheritdoc />
     public string Description
-        => "Show this help menu.";
+        => "Show help for all commands.";
+
+    /// <inheritdoc />
+    public bool NeedsVsInstance
+        => false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="HelpCommand"/> class.
@@ -29,18 +37,34 @@ public sealed class HelpCommand : ICommand
     /// <inheritdoc />
     public Task ExecuteAsync(CommandContext context)
     {
-        Console.WriteLine("VsExtensionsTool - Visual Studio Extensions Manager\n");
-        Console.WriteLine("Available commands:");
+        AnsiConsole.Clear();
+
+        AnsiConsole.Write
+        (
+            new FigletText(TITLE)
+                .Centered()
+                .Color(Color.Green1)
+        );
+
+        AnsiConsole.MarkupLine($"[bold blue]{SUBTITLE}[/]");
+        AnsiConsole.WriteLine();
+
+        var table = new Table().Border(TableBorder.Rounded);
+        table.AddColumn(new TableColumn(COMMAND_HEADER).Centered());
+        table.AddColumn(DESCRIPTION_HEADER);
 
         foreach (var cmd in _commands)
-        {
-            cmd.PrintHelp();
-        }
+            table.AddRow($"[yellow]{Markup.Escape(cmd.Name)}[/]", cmd.Description);
+
+        AnsiConsole.Write(table);
+        AnsiConsole.WriteLine();
+
+        AnsiConsole.MarkupLine("[dim]Use the specific command or /help for more details.[/]");
 
         return Task.CompletedTask;
     }
 
     /// <inheritdoc />
     public void PrintHelp()
-        => Console.WriteLine($"{Name}   {Description}");
+        => AnsiConsole.MarkupLine($"{Name}   {Description}");
 }

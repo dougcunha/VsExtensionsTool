@@ -23,7 +23,7 @@ public sealed class CommandContext
     /// <summary>
     /// Gets the selected Visual Studio instance, if any.
     /// </summary>
-    public VisualStudioInstance? VisualStudioInstance { get; }
+    public VisualStudioInstance? VisualStudioInstance { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandContext"/> class.

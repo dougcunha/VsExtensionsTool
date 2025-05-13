@@ -11,13 +11,16 @@ public sealed class RemoveCommand : ICommand
 
     /// <inheritdoc />
     public string Description
-        => "Remove extension by Id or by selection.";
+        => "Remove an extension by its id.";
+
+    /// <inheritdoc />
+    public bool NeedsVsInstance
+        => true;
 
     /// <inheritdoc />
     public bool CanExecute(CommandContext context)
         => context.Args.Length > 0
-            && context.Args[0] == "/remove"
-            && context.VisualStudioInstance != null;
+            && context.Args[0] == "/remove";
 
     /// <inheritdoc />
     public async Task ExecuteAsync(CommandContext context)
