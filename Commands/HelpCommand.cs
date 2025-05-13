@@ -32,7 +32,7 @@ public sealed class HelpCommand : ICommand
 
     /// <inheritdoc />
     public bool CanExecute(CommandContext context)
-        => context.Args.Length == 0 || context.Args[0] == "/help";
+        => context.Args.Length == 0 || context.Args is ["/help"];
 
     /// <inheritdoc />
     public Task ExecuteAsync(CommandContext context)

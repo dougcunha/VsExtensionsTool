@@ -76,7 +76,7 @@ public sealed class VisualStudioManager
         await AnsiConsole.Status()
             .Spinner(Spinner.Known.Dots2)
             .SpinnerStyle(Style.Parse("green"))
-            .StartAsync("[green]Detectando instalações do Visual Studio...[/]", async t =>
+            .StartAsync("[green]Detectando instalações do Visual Studio...[/]", async _ =>
             {
                 var vswherePath = Environment.ExpandEnvironmentVariables(VSWHERE_PATH);
                 using var process = new Process();

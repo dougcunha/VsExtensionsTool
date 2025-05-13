@@ -11,6 +11,14 @@
     "Update": {
       "commandName": "Project",
       "commandLineArgs": "/update"
+    },
+    "Help": {
+      "commandName": "Project",
+      "commandLineArgs": "/help"
+    },
+    "ListOutdated": {
+      "commandName": "Project",
+      "commandLineArgs": "/list /outdated"
     }
   }
 }

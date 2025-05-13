@@ -24,11 +24,18 @@ public sealed class ListVsCommand : ICommand
     /// <inheritdoc />
     public async Task ExecuteAsync(CommandContext context)
     {
+        if (ICommand.ShowHelp(context.Args))
+        {
+            PrintHelp();
+
+            return;
+        }
+
         var installations = await context.VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
         VisualStudioDisplayHelper.PrintInstallationsTable(installations);
     }
 
     /// <inheritdoc />
     public void PrintHelp()
-        => Console.WriteLine($"{Name}   {Description}");
+        => AnsiConsole.MarkupLine($"{Name}   {Description}");
 }

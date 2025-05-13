@@ -27,8 +27,7 @@ public sealed class ListCommand : ICommand
 
     /// <inheritdoc />
     public bool CanExecute(CommandContext context)
-        => context.Args.Length > 0
-            && context.Args[0] == "/list";
+        => context.Args.Length > 0 && context.Args[0] == "/list";
 
     private void PopulateExtensionInfos(CommandContext context)
     {
@@ -59,6 +58,13 @@ public sealed class ListCommand : ICommand
     /// <inheritdoc />
     public async Task ExecuteAsync(CommandContext context)
     {
+        if (ICommand.ShowHelp(context.Args))
+        {
+            PrintHelp();
+
+            return;
+        }
+
         var showMarketplaceVersion = context.Args.Any(static arg => arg == "/version");
         var showOnlyOutdated = context.Args.Any(static arg => arg == "/outdated");
 
@@ -67,6 +73,7 @@ public sealed class ListCommand : ICommand
         if (_extensions is null || _extensions.Count == 0)
         {
             AnsiConsole.MarkupLine("[red]No extensions found.[/]");
+
             return;
         }
 
@@ -74,12 +81,12 @@ public sealed class ListCommand : ICommand
         (
             _extensions,
             context,
-            showMarketplaceVersion: showMarketplaceVersion,
+            showMarketplaceVersion: showMarketplaceVersion || showOnlyOutdated,
             showOnlyOutdated: showOnlyOutdated
         ).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
     public void PrintHelp()
-        => Console.WriteLine($"{Name} [filter] [/version] [/outdated]   {Description}");
+        => AnsiConsole.WriteLine($"{Name} [<filter>] [/version] [/outdated]   {Description}".EscapeMarkup());
 }
