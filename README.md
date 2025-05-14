@@ -65,7 +65,7 @@ If the Marketplace version check stops working, it is likely due to changes in t
 ```sh
 VsExtensionsTool.exe /list_vs
 VsExtensionsTool.exe /list [filter] [/version] [/outdated]
-VsExtensionsTool.exe /remove <id>
+VsExtensionsTool.exe /remove [<id>]
 VsExtensionsTool.exe /update
 ```
 
