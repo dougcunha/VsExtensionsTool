@@ -77,6 +77,7 @@ public sealed class UpdateCommand : ICommand
     {
         var tempVsixPath = await DownloadVsixFromMarketplaceAsync(selectedExt).ConfigureAwait(false);
         var vsixInstallerPath = Path.Combine(context.VisualStudioInstance!.InstallationPath!, "Common7", "IDE", "VSIXInstaller.exe");
+        var instanceId = context.VisualStudioInstance.InstanceId!;
 
         if (!File.Exists(vsixInstallerPath))
         {
@@ -95,7 +96,7 @@ public sealed class UpdateCommand : ICommand
                 process.StartInfo = new ProcessStartInfo
                 {
                     FileName = vsixInstallerPath,
-                    Arguments = $"/quiet \"{tempVsixPath}\"",
+                    Arguments = $"/quiet /instanceIds:{instanceId} \"{tempVsixPath}\"",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true

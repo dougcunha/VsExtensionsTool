@@ -32,27 +32,7 @@ public sealed class ListCommand : ICommand
     private void PopulateExtensionInfos(CommandContext context)
     {
         var filter = context.Args.Skip(1).FirstOrDefault(static arg => arg != "/version" && arg != "/outdated");
-        _extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!);
-
-        if (string.IsNullOrWhiteSpace(filter))
-            return;
-
-        _extensions =
-        [
-            .. _extensions.Where
-            (
-                e => e.Name.Contains
-                (
-                    filter,
-                    StringComparison.CurrentCultureIgnoreCase
-                )
-                || e.Id.Contains
-                (
-                    filter,
-                    StringComparison.CurrentCultureIgnoreCase
-                )
-            )
-        ];
+        _extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
     }
 
     /// <inheritdoc />
@@ -88,5 +68,5 @@ public sealed class ListCommand : ICommand
 
     /// <inheritdoc />
     public void PrintHelp()
-        => AnsiConsole.WriteLine($"{Name} [<filter>] [/version] [/outdated]   {Description}".EscapeMarkup());
+        => AnsiConsole.MarkupLine($"{Name} [[<filter>]] [[/version]] [[/outdated]]   {Description}");
 }

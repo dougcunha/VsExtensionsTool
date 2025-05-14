@@ -75,25 +75,44 @@ public sealed class ExtensionManager
     /// Gets all extensions installed for the specified Visual Studio installation.
     /// </summary>
     /// <param name="installationPath">The installation path of Visual Studio.</param>
+    /// <param name="filter">
+    /// An optional filter string to search for extensions by name or Id.
+    /// </param>
     /// <returns>List of ExtensionInfo objects representing each extension.</returns>
-    public List<ExtensionInfo> GetExtensions(string installationPath)
+    public List<ExtensionInfo> GetExtensions(string installationPath, string? filter = null)
     {
         var extensions = new List<ExtensionInfo>();
 
-        foreach (var folder in GetExtensionPaths(installationPath).Where(Directory.Exists))
+        foreach (var dir in GetExtensionPaths(installationPath).Where(Directory.Exists).SelectMany(Directory.GetDirectories))
         {
-            foreach (var dir in Directory.GetDirectories(folder))
-            {
-                var manifestPath = Path.Combine(dir, VSIX_MANIFEST);
+            var manifestPath = Path.Combine(dir, VSIX_MANIFEST);
 
-                if (!File.Exists(manifestPath))
-                    continue;
+            if (!File.Exists(manifestPath))
+                continue;
 
-                var info = ReadManifest(manifestPath);
+            var info = ReadManifest(manifestPath);
 
-                if (info != null)
-                    extensions.Add(info);
-            }
+            if (info != null)
+                extensions.Add(info);
+        }
+
+        if (!string.IsNullOrEmpty(filter))
+        {
+            extensions =
+            [
+                .. extensions.Where
+                (e => e.Name.Contains
+                (
+                    filter,
+                    StringComparison.CurrentCultureIgnoreCase
+                )
+                || e.Id.Contains
+                (
+                    filter,
+                    StringComparison.CurrentCultureIgnoreCase
+                )
+                )
+            ];
         }
 
         return [.. extensions.OrderBy(static e => e.Name, StringComparer.CurrentCultureIgnoreCase)];
@@ -104,7 +123,10 @@ public sealed class ExtensionManager
     /// </summary>
     /// <param name="installationPath">The installation path of Visual Studio.</param>
     /// <param name="id">The Id of the extension to remove.</param>
-    public void RemoveExtensionById(string installationPath, string id)
+    /// <param name="instanceId">
+    /// The instance ID of the Visual Studio installation.
+    /// </param>
+    public void RemoveExtensionById(string installationPath, string id, string instanceId)
     {
         const string VSIX_INSTALLER_RELATIVE_PATH = "Common7/IDE/VSIXInstaller.exe";
         var vsixInstallerPath = Path.Combine(installationPath, VSIX_INSTALLER_RELATIVE_PATH);
@@ -131,7 +153,7 @@ public sealed class ExtensionManager
         process.StartInfo = new ProcessStartInfo
         {
             FileName = vsixInstallerPath,
-            Arguments = $"/uninstall:{extension.Id}",
+            Arguments = $"/uninstall:{extension.Id} /quiet /sp /instanceIds:{instanceId}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true

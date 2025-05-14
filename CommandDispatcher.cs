@@ -7,7 +7,6 @@ public sealed class CommandDispatcher
 {
     private readonly VisualStudioManager _vsManager;
     private readonly ExtensionManager _extManager;
-    private readonly Dictionary<string, string> _aliases;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CommandDispatcher"/> class.
@@ -16,19 +15,24 @@ public sealed class CommandDispatcher
     {
         _vsManager = vsManager;
         _extManager = extManager;
-
-        _aliases = new Dictionary<string, string>
-        {
-            { "--help", "/help" },
-            { "--list", "/list" },
-            { "--list_vs", "/list_vs" },
-            { "--remove", "/remove" },
-            { "--version", "/version" },
-            { "--outdated", "/outdated" },
-            { "--update", "/update" },
-            { "--id", "/id" }
-        };
     }
+
+    /// <summary>
+    /// Normalizes command-line arguments so that any parameter can be used with '/' or '--'.
+    /// </summary>
+    private static string NormalizeArg(string arg)
+    {
+        if (arg.StartsWith("--", StringComparison.Ordinal))
+            return "/" + arg[2..];
+
+        return arg;
+    }
+
+    /// <summary>
+    /// Returns a list of arguments with both '/' and '--' variants for each parameter.
+    /// </summary>
+    private static string[] NormalizeArgs(string[] args)
+        => [..args.Select(NormalizeArg)];
 
     /// <summary>
     /// Create all available commands.
@@ -78,7 +82,7 @@ public sealed class CommandDispatcher
     {
         try
         {
-            args = [.. args.Select(a => _aliases.GetValueOrDefault(a, a))];
+            args = NormalizeArgs(args);
             var context = new CommandContext(args, _vsManager, _extManager, null);
             var commands = CreateCommands();
             var needsVsInstance = !ICommand.ShowHelp(args) && commands.Any(c => c.CanExecute(context) && c.NeedsVsInstance);
