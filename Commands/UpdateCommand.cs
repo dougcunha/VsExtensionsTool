@@ -28,46 +28,54 @@ public sealed class UpdateCommand : ICommand
 
         var extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!);
         AnsiConsole.MarkupLine("[bold]Checking for outdated extensions...[/]");
+        await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, context.ExtensionManager).ConfigureAwait(false);
 
-        var outdated = await ExtensionListDisplayHelper.DisplayExtensionsAsync(
-            extensions,
-            context,
-            showMarketplaceVersion: true,
-            showOnlyOutdated: true
+        List<ExtensionInfo> outdated = [.. extensions.Where(static ext => ext.IsOutdated)];
+
+        if (outdated.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[green]All extensions are up to date![/]");
+
+            return;
+        }
+
+        var selected = await AnsiConsole.PromptAsync
+        (
+            new MultiSelectionPrompt<(string Name, string Id)>()
+                .Title("Select the extensions to [green]update[/]:")
+                .NotRequired()
+                .PageSize(20)
+                .MoreChoicesText("[grey](Move up and down to reveal more extensions)[/]")
+                .InstructionsText("[grey](Press [blue]<space>[/] to toggle, [green]<enter>[/] to accept)[/]")
+                .AddChoices([.. outdated.Select(static e => ($"{e.Name} ({e.InstalledVersion} » {e.LatestVersion})", e.Id))])
+                .UseConverter(static e => e.Item1)
         ).ConfigureAwait(false);
 
-        if (outdated.Count == 0)
+        if (selected.Count == 0)
         {
-            AnsiConsole.MarkupLine("[green]All extensions are up to date![/]");
+            AnsiConsole.MarkupLine("[yellow]No extensions selected for update.[/]");
 
             return;
         }
 
-        var selectedExt = SelectExtension(outdated);
+        await AnsiConsole
+            .Status()
+            .StartAsync
+            (
+                "Updating selected extensions...",
+                async ctx =>
+                {
+                    ctx.Spinner(Spinner.Known.Dots2);
+                    ctx.SpinnerStyle(Style.Parse("green"));
 
-        if (selectedExt is null)
-            return;
-
-        await ApplyUpdateAsync(context, selectedExt).ConfigureAwait(false);
-    }
-
-    private static ExtensionInfo? SelectExtension(List<ExtensionInfo> outdated)
-    {
-        if (outdated.Count == 0)
-        {
-            AnsiConsole.MarkupLine("[green]All extensions are up to date![/]");
-
-            return null;
-        }
-
-        var choice = AnsiConsole.Ask<int>("Enter the number of the extension to update (0 to cancel):");
-
-        if (choice > 0 && choice <= outdated.Count)
-            return outdated[choice - 1];
-
-        AnsiConsole.MarkupLine("[grey]Update cancelled.[/]");
-
-        return null;
+                    foreach (var ext in selected)
+                    {
+                        var info = outdated.First(e => e.Id == ext.Id);
+                        AnsiConsole.MarkupLine($"[yellow]Updating extension:[/] {ext.Item1}");
+                        await ApplyUpdateAsync(context, info).ConfigureAwait(false);
+                    }
+                }
+            );
     }
 
     private static async Task ApplyUpdateAsync(CommandContext context, ExtensionInfo selectedExt)

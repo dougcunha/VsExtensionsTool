@@ -114,7 +114,7 @@ public sealed class ExtensionManager
         return [.. extensions.OrderBy(static e => e.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
 
-    public async Task PopulateExtensionInfoFromMarketplace(List<ExtensionInfo> extensions, Action<ExtensionInfo> onPopulate)
+    public async Task PopulateExtensionInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, Action<ExtensionInfo> onPopulate)
     {
         foreach (var ext in extensions)
         {

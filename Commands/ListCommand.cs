@@ -5,14 +5,6 @@ namespace VsExtensionsTool.Commands;
 /// </summary>
 public sealed class ListCommand : ICommand
 {
-    private List<ExtensionInfo>? _extensions;
-
-    /// <summary>
-    /// List of extensions for the selected Visual Studio instance.
-    /// </summary>
-    public List<ExtensionInfo> Extensions
-        => _extensions ?? throw new InvalidOperationException("Extensions have not been initialized.");
-
     /// <inheritdoc />
     public string Name
         => "/list";
@@ -29,10 +21,13 @@ public sealed class ListCommand : ICommand
     public bool CanExecute(CommandContext context)
         => context.Args.Length > 0 && context.Args[0] == "/list";
 
-    private void PopulateExtensionInfos(CommandContext context)
+    private static List<ExtensionInfo> GetExtensions(CommandContext context)
     {
-        var filter = context.Args.Skip(1).FirstOrDefault(static arg => arg != "/version" && arg != "/outdated");
-        _extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
+        var filter = context.Args
+            .Skip(1)
+            .FirstOrDefault(static arg => arg != "/version" && arg != "/outdated");
+
+        return context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
     }
 
     /// <inheritdoc />
@@ -47,23 +42,24 @@ public sealed class ListCommand : ICommand
 
         var showMarketplaceVersion = context.Args.Any(static arg => arg == "/version");
         var showOnlyOutdated = context.Args.Any(static arg => arg == "/outdated");
+        var extensions = GetExtensions(context);
 
-        PopulateExtensionInfos(context);
+        if (showMarketplaceVersion || showOnlyOutdated)
+            await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, context.ExtensionManager).ConfigureAwait(false);
 
-        if (_extensions is null || _extensions.Count == 0)
+        if (extensions.Count == 0)
         {
             AnsiConsole.MarkupLine("[red]No extensions found.[/]");
 
             return;
         }
 
-        await ExtensionListDisplayHelper.DisplayExtensionsAsync
+        ExtensionListDisplayHelper.DisplayExtensions
         (
-            _extensions,
-            context,
-            showMarketplaceVersion: showMarketplaceVersion || showOnlyOutdated,
-            showOnlyOutdated: showOnlyOutdated
-        ).ConfigureAwait(false);
+            showOnlyOutdated
+                ? [.. extensions.Where(static ext => ext.IsOutdated)]
+                : extensions
+        );
     }
 
     /// <inheritdoc />
