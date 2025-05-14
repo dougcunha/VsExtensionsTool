@@ -14,11 +14,11 @@
     },
     "Help": {
       "commandName": "Project",
-      "commandLineArgs": "/help"
+      "commandLineArgs": "/list /help"
     },
     "ListOutdated": {
       "commandName": "Project",
-      "commandLineArgs": "/list /outdated"
+      "commandLineArgs": "/list --outdated"
     }
   }
 }

@@ -35,50 +35,58 @@ public sealed class RemoveCommand : ICommand
         var args = context.Args;
         (string id, bool direct, string filter) = ParseArgs(args);
 
-        if (!direct && string.IsNullOrWhiteSpace(id))
+        if (direct && !string.IsNullOrWhiteSpace(id))
         {
-            var listCmd = new ListCommand();
-            var filteredContext = SetListFilteredContext(context, filter);
-            await listCmd.ExecuteAsync(filteredContext).ConfigureAwait(false);
+            context.ExtensionManager.RemoveExtensionById(context.VisualStudioInstance!.InstallationPath!, id, context.VisualStudioInstance!.InstanceId!);
 
-            Console.Write("\nEnter the number of the extension to remove: ");
-            var input = Console.ReadLine();
-
-            if (!int.TryParse(input, out var index))
-            {
-                Console.WriteLine("Invalid number.");
-
-                return;
-            }
-
-            var extensions = listCmd.Extensions;
-
-            if (index < 1 || index > extensions.Count)
-            {
-                Console.WriteLine("Invalid extension number.");
-
-                return;
-            }
-
-            id = extensions[index - 1].Id;
-            Console.WriteLine($"Removing extension \"{extensions[index - 1].Name}\"...");
+            return;
         }
 
-        if (!string.IsNullOrWhiteSpace(id))
-            context.ExtensionManager.RemoveExtensionById(context.VisualStudioInstance!.InstallationPath!, id);
-        else
-            Console.WriteLine("Please provide the Id of the extension to remove.");
-    }
+        var extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
 
-    private static CommandContext SetListFilteredContext(CommandContext context, string filter)
-    {
-        if (string.IsNullOrWhiteSpace(filter))
-            return context;
+        if (extensions.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
 
-        var filteredArgs = new[] { "/list", filter };
-        context = new CommandContext(filteredArgs, context.VisualStudioManager, context.ExtensionManager, context.VisualStudioInstance);
+            return;
+        }
 
-        return context;
+        var selected = await AnsiConsole.PromptAsync
+        (
+            new MultiSelectionPrompt<(string Name, string Id)>()
+                .Title("Select the extensions to [red]remove[/]:")
+                .NotRequired()
+                .PageSize(20)
+                .MoreChoicesText("[grey](Move up and down to reveal more extensions)[/]")
+                .InstructionsText("[grey](Press [blue]<space>[/] to toggle, [green]<enter>[/] to accept)[/]")
+                .AddChoices([.. extensions.Select(static e => (e.Name, e.Id))])
+                .UseConverter(static e => e.Name)
+        ).ConfigureAwait(false);
+
+        if (selected.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[yellow]No extensions selected for removal.[/]");
+
+            return;
+        }
+
+        AnsiConsole
+            .Status()
+            .Start
+            (
+                "Removing selected extensions...",
+                ctx =>
+                {
+                    ctx.Spinner(Spinner.Known.Dots2);
+                    ctx.SpinnerStyle(Style.Parse("green"));
+
+                    foreach (var ext in selected)
+                    {
+                        AnsiConsole.MarkupLine($"[yellow]Removing extension:[/] {ext.Name}");
+                        context.ExtensionManager.RemoveExtensionById(context.VisualStudioInstance!.InstallationPath!, ext.Id, context.VisualStudioInstance!.InstanceId!);
+                    }
+                }
+            );
     }
 
     private static (string id, bool direct, string filter) ParseArgs(string[] args)
