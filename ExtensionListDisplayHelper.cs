@@ -1,7 +1,5 @@
 namespace VsExtensionsTool;
 
-using VsExtensionsTool.Commands;
-
 /// <summary>
 /// Responsible for displaying extension lists with support for progress and marketplace queries.
 /// </summary>
@@ -11,29 +9,70 @@ public static class ExtensionListDisplayHelper
     /// Displays a list of extensions, with optional support for marketplace version queries and progress bar.
     /// </summary>
     /// <param name="extensions">List of installed extensions.</param>
-    /// <param name="context">Command context.</param>
-    /// <param name="showMarketplaceVersion">If true, queries and displays marketplace version.</param>
-    /// <param name="showOnlyOutdated">If true, displays only outdated extensions.</param>
     /// <returns>List of displayed extensions (filtered and, if requested, enriched with marketplace data).</returns>
-    public static async Task<List<ExtensionInfo>> DisplayExtensionsAsync
+    public static void DisplayExtensions
     (
-        List<ExtensionInfo> extensions,
-        CommandContext context,
-        bool showMarketplaceVersion = false,
-        bool showOnlyOutdated = false
+        List<ExtensionInfo> extensions
     )
     {
-        var displayed = new List<ExtensionInfo>();
-        var total = extensions.Count;
         var table = new Table().Border(TableBorder.Rounded);
         table.AddColumn("#");
         table.AddColumn("Name");
         table.AddColumn("Publisher");
         table.AddColumn("Installed");
 
-        if (showMarketplaceVersion || showOnlyOutdated)
+        var showMarketplaceVersion = extensions.Any(static ext => ext.LatestVersion != "Not found");
+
+        if (showMarketplaceVersion)
             table.AddColumn("Marketplace");
 
+        var index = 1;
+
+        foreach (var ext in extensions)
+        {
+            string? marketplaceVersion = null;
+
+            if (showMarketplaceVersion)
+            {
+                marketplaceVersion = ext.IsOutdated
+                    ? $"[yellow]{Markup.Escape(ext.LatestVersion)}[/]"
+                    : Markup.Escape(ext.LatestVersion);
+            }
+
+            var columns = new List<string?>
+             {
+                 ext.IsOutdated
+                     ? $"[yellow]{index}[/]"
+                     : index.ToString(),
+                 ext.IsOutdated
+                     ? $"[yellow]{Markup.Escape(ext.Name)}[/]"
+                     : Markup.Escape(ext.Name),
+                 ext.IsOutdated
+                     ? $"[yellow]{Markup.Escape(ext.Publisher)}[/]"
+                     : Markup.Escape(ext.Publisher),
+                 ext.IsOutdated
+                     ? $"[yellow]{Markup.Escape(ext.InstalledVersion)}[/]"
+                     : Markup.Escape(ext.InstalledVersion),
+                 marketplaceVersion
+             };
+
+            table.AddRow
+            (
+                columns.Where(static c => c != null).ToArray()!
+            );
+
+            index++;
+        }
+
+        if (extensions.Count == 0)
+            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
+        else
+            AnsiConsole.Write(table);
+    }
+
+    public static async Task PopulateExtensionsInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, ExtensionManager extensionManager)
+    {
+        AnsiConsole.MarkupLine("[bold]Fetching extensions versions...[/]");
         var progress = AnsiConsole.Progress();
 
         await progress
@@ -52,78 +91,20 @@ public static class ExtensionListDisplayHelper
             )
             .StartAsync(async progressCtx =>
             {
-                var progressTask = progressCtx.AddTask(showMarketplaceVersion ? "Checking Marketplace..." : "Getting extensions...", maxValue: total);
+                var progressTask = progressCtx.AddTask("Checking Marketplace...", maxValue: extensions.Count);
 
-                await ProcessExtensionsAsync(extensions, context, showMarketplaceVersion, showOnlyOutdated, displayed, table, progressTask).ConfigureAwait(false);
+                await extensionManager
+                    .PopulateExtensionInfoFromMarketplaceAsync
+                    (
+                        extensions,
+                        ext =>
+                        {
+                            progressTask.Description = $"Checking {ext.Name}...";
+                            progressTask.Increment(1);
+                        }).ConfigureAwait(false);
 
                 progressTask.Description = "Done";
                 progressTask.StopTask();
             }).ConfigureAwait(false);
-
-        if (displayed.Count == 0)
-            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
-        else
-            AnsiConsole.Write(table);
-
-        return displayed;
-    }
-
-    private static async Task ProcessExtensionsAsync
-    (
-        List<ExtensionInfo> extensions,
-        CommandContext context,
-        bool showMarketplaceVersion,
-        bool showOnlyOutdated,
-        List<ExtensionInfo> displayed,
-        Table table,
-        ProgressTask progressTask
-    )
-    {
-        var index = 1;
-
-        foreach (var ext in extensions)
-        {
-            progressTask.Description = Markup.Escape(ext.Name);
-
-            if (showMarketplaceVersion || showOnlyOutdated)
-                await MarketplaceHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, context.VisualStudioInstance!).ConfigureAwait(false);
-
-            if (showOnlyOutdated && !ext.IsOutdated)
-            {
-                progressTask.Increment(1);
-
-                continue;
-            }
-
-            var columns = new List<string?>
-            {
-                ext.IsOutdated
-                    ? $"[yellow]{index}[/]"
-                    : index.ToString(),
-                ext.IsOutdated
-                    ? $"[yellow]{Markup.Escape(ext.Name)}[/]"
-                    : Markup.Escape(ext.Name),
-                ext.IsOutdated
-                    ? $"[yellow]{Markup.Escape(ext.Publisher)}[/]"
-                    : Markup.Escape(ext.Publisher),
-                ext.IsOutdated
-                    ? $"[yellow]{Markup.Escape(ext.InstalledVersion)}[/]"
-                    : Markup.Escape(ext.InstalledVersion),
-                showMarketplaceVersion
-                    ? ext.IsOutdated
-                        ? $"[yellow]{Markup.Escape(ext.LatestVersion)}[/]"
-                        : Markup.Escape(ext.LatestVersion)
-                    : null
-            };
-
-            table.AddRow
-            (
-                columns.Where(static c => c != null).ToArray()!
-            );
-
-            displayed.Add(ext);
-            index++;
-            progressTask.Increment(1);
-        }
     }
 }
