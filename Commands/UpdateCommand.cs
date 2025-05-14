@@ -1,6 +1,3 @@
-global using System.Diagnostics;
-global using VsExtensionsTool.Commands;
-
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
@@ -75,59 +72,17 @@ public sealed class UpdateCommand : ICommand
 
     private static async Task ApplyUpdateAsync(CommandContext context, ExtensionInfo selectedExt)
     {
-        var tempVsixPath = await DownloadVsixFromMarketplaceAsync(selectedExt).ConfigureAwait(false);
-        var vsixInstallerPath = Path.Combine(context.VisualStudioInstance!.InstallationPath!, "Common7", "IDE", "VSIXInstaller.exe");
-        var instanceId = context.VisualStudioInstance.InstanceId!;
-
-        if (!File.Exists(vsixInstallerPath))
-        {
-            AnsiConsole.MarkupLine("[red]VSIXInstaller.exe not found in this installation.[/]");
-
-            return;
-        }
-
         await AnsiConsole.Status()
             .Spinner(Spinner.Known.Dots2)
             .SpinnerStyle(Style.Parse("green"))
-            .StartAsync("[blue]Running VSIXInstaller...[/]", async t =>
+            .StartAsync("[blue]Running VSIXInstaller...[/]", async _ =>
             {
-                using var process = new Process();
+                var output = await ExtensionManager.UpdateExtensionAsync(selectedExt, context.VisualStudioInstance!)
+                    .ConfigureAwait(false);
 
-                process.StartInfo = new ProcessStartInfo
-                {
-                    FileName = vsixInstallerPath,
-                    Arguments = $"/quiet /instanceIds:{instanceId} \"{tempVsixPath}\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                process.Start();
-                var output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
-                await process.WaitForExitAsync().ConfigureAwait(false);
                 AnsiConsole.WriteLine(output);
                 AnsiConsole.MarkupLine($"[green]Extension '{selectedExt.Name}' updated![/]");
             }).ConfigureAwait(false);
-
-        try
-        {
-            File.Delete(tempVsixPath);
-        }
-        catch
-        {
-            AnsiConsole.MarkupLine("[red]Error deleting temporary VSIX file.[/]");
-        }
-    }
-
-    private static async Task<string> DownloadVsixFromMarketplaceAsync(ExtensionInfo selectedExt)
-    {
-        var tempVsixPath = Path.Combine(Path.GetTempPath(), $"{selectedExt.Id}_{Guid.NewGuid()}.vsix");
-        AnsiConsole.MarkupLine("[blue]Downloading VSIX from Marketplace...[/]");
-        using var http = new HttpClient();
-        var vsixBytes = await http.GetByteArrayAsync(selectedExt.VsixUrl!).ConfigureAwait(false);
-        await File.WriteAllBytesAsync(tempVsixPath, vsixBytes).ConfigureAwait(false);
-
-        return tempVsixPath;
     }
 
     public void PrintHelp()

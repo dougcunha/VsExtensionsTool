@@ -31,7 +31,7 @@ public sealed class ListVsCommand : ICommand
             return;
         }
 
-        var installations = await context.VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
+        var installations = await VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
         VisualStudioDisplayHelper.PrintInstallationsTable(installations);
     }
 

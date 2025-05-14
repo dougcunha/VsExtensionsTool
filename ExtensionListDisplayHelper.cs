@@ -1,5 +1,7 @@
 namespace VsExtensionsTool;
 
+using VsExtensionsTool.Commands;
+
 /// <summary>
 /// Responsible for displaying extension lists with support for progress and marketplace queries.
 /// </summary>
