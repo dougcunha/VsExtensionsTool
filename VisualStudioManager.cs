@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace VsExtensionsTool;
 
+using System.Diagnostics;
+
 /// <summary>
 /// Represents information about a Visual Studio installation.
 /// </summary>
@@ -60,7 +62,7 @@ public sealed class VisualStudioInstance
 /// <summary>
 /// Provides methods to detect and retrieve Visual Studio installations using vswhere.
 /// </summary>
-public sealed class VisualStudioManager
+public static class VisualStudioManager
 {
     private const string VSWHERE_PATH = @"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe";
     private const string VSWHERE_ARGS = "-all -prerelease -format json";
@@ -69,14 +71,14 @@ public sealed class VisualStudioManager
     /// Gets all Visual Studio installations on the system, including Preview versions.
     /// </summary>
     /// <returns>List of VisualStudioInstance objects representing each installation.</returns>
-    public async Task<List<VisualStudioInstance>> GetVisualStudioInstallationsAsync()
+    public static async Task<List<VisualStudioInstance>> GetVisualStudioInstallationsAsync()
     {
         var output = string.Empty;
 
         await AnsiConsole.Status()
             .Spinner(Spinner.Known.Dots2)
             .SpinnerStyle(Style.Parse("green"))
-            .StartAsync("[green]Detectando instalações do Visual Studio...[/]", async _ =>
+            .StartAsync("[green]Detecting Visual Studio installations...[/]", async _ =>
             {
                 var vswherePath = Environment.ExpandEnvironmentVariables(VSWHERE_PATH);
                 using var process = new Process();
@@ -95,9 +97,8 @@ public sealed class VisualStudioManager
                 await process.WaitForExitAsync().ConfigureAwait(false);
             }).ConfigureAwait(false);
 
-        if (string.IsNullOrWhiteSpace(output))
-            return [];
-
-        return JsonSerializer.Deserialize<List<VisualStudioInstance>>(output) ?? [];
+        return string.IsNullOrWhiteSpace(output)
+            ? []
+            : JsonSerializer.Deserialize<List<VisualStudioInstance>>(output) ?? [];
     }
 }

@@ -1,32 +1,23 @@
 namespace VsExtensionsTool;
 
+using System.Diagnostics;
+using VsExtensionsTool.Commands;
+
 /// <summary>
 /// Responsible for resolving and dispatching commands based on command-line arguments.
 /// </summary>
-public sealed class CommandDispatcher
+/// <remarks>
+/// Initializes a new instance of the <see cref="CommandDispatcher"/> class.
+/// </remarks>
+public sealed class CommandDispatcher(ExtensionManager extManager)
 {
-    private readonly VisualStudioManager _vsManager;
-    private readonly ExtensionManager _extManager;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CommandDispatcher"/> class.
-    /// </summary>
-    public CommandDispatcher(VisualStudioManager vsManager, ExtensionManager extManager)
-    {
-        _vsManager = vsManager;
-        _extManager = extManager;
-    }
-
     /// <summary>
     /// Normalizes command-line arguments so that any parameter can be used with '/' or '--'.
     /// </summary>
     private static string NormalizeArg(string arg)
-    {
-        if (arg.StartsWith("--", StringComparison.Ordinal))
-            return "/" + arg[2..];
-
-        return arg;
-    }
+        => arg.StartsWith("--", StringComparison.Ordinal)
+            ? "/" + arg[2..]
+            : arg;
 
     /// <summary>
     /// Returns a list of arguments with both '/' and '--' variants for each parameter.
@@ -55,9 +46,9 @@ public sealed class CommandDispatcher
     /// <summary>
     /// Selects the Visual Studio instance, if necessary.
     /// </summary>
-    private async Task<VisualStudioInstance?> SelectVisualStudioInstanceAsync()
+    private static async Task<VisualStudioInstance?> SelectVisualStudioInstanceAsync()
     {
-        var installations = await _vsManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
+        var installations = await VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
 
         if (installations.Count == 0)
         {
@@ -72,10 +63,9 @@ public sealed class CommandDispatcher
         VisualStudioDisplayHelper.PrintInstallationsTable(installations, false);
         var choice = await AnsiConsole.AskAsync<int>("Enter the number of the desired installation (0 to cancel): ").ConfigureAwait(false);
 
-        if (choice > 0 && choice <= installations.Count)
-            return installations[choice - 1];
-
-        return null;
+        return choice > 0 && choice <= installations.Count
+            ? installations[choice - 1]
+            : null;
     }
 
     public async Task DispatchAsync(string[] args)
@@ -83,7 +73,7 @@ public sealed class CommandDispatcher
         try
         {
             args = NormalizeArgs(args);
-            var context = new CommandContext(args, _vsManager, _extManager, null);
+            var context = new CommandContext(args, extManager, null);
             var commands = CreateCommands();
             var needsVsInstance = !ICommand.ShowHelp(args) && commands.Any(c => c.CanExecute(context) && c.NeedsVsInstance);
 
@@ -99,7 +89,7 @@ public sealed class CommandDispatcher
                 }
 
                 context.VisualStudioInstance = selectedInstance;
-                _extManager.SetInstanceInfo(selectedInstance.InstanceId!, selectedInstance.InstallationVersion!);
+                extManager.SetInstanceInfo(selectedInstance);
             }
 
             var commandsToRun = commands.Where(command => command.CanExecute(context)).ToList();

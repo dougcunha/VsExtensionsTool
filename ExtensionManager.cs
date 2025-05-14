@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using System.Xml.Linq;
 
@@ -57,19 +58,14 @@ public sealed class ExtensionManager
 {
     private const string EXTENSIONS_RELATIVE_PATH = "Extensions";
     private const string VSIX_MANIFEST = "extension.vsixmanifest";
-    private string _instanceId = string.Empty;
-    private string _installationVersion = string.Empty;
+    private VisualStudioInstance? _instance;
 
     /// <summary>
     /// Sets the instance ID and installation version for the Visual Studio instance to manage extensions for.
     /// </summary>
-    /// <param name="instanceId">The instance ID of the Visual Studio installation.</param>
-    /// <param name="installationVersion">The installation version of the Visual Studio installation.</param>
-    public void SetInstanceInfo(string instanceId, string installationVersion)
-    {
-        _instanceId = instanceId;
-        _installationVersion = installationVersion;
-    }
+    /// <param name="instance">The instance of the Visual Studio installation.</param>
+    public void SetInstanceInfo(VisualStudioInstance instance)
+        => _instance = instance;
 
     /// <summary>
     /// Gets all extensions installed for the specified Visual Studio installation.
@@ -118,6 +114,15 @@ public sealed class ExtensionManager
         return [.. extensions.OrderBy(static e => e.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
 
+    public async Task PopulateExtensionInfoFromMarketplace(List<ExtensionInfo> extensions, Action<ExtensionInfo> onPopulate)
+    {
+        foreach (var ext in extensions)
+        {
+            await MarketplaceHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, _instance!);
+            onPopulate(ext);
+        }
+    }
+
     /// <summary>
     /// Removes an extension by its Id for the specified Visual Studio installation.
     /// </summary>
@@ -163,7 +168,75 @@ public sealed class ExtensionManager
         string output = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
         AnsiConsole.MarkupLine(Markup.Escape(output));
-        AnsiConsole.MarkupLine($"Extension '{extension.Name.EscapeMarkup()}' removed (Id: {extension.Id.EscapeMarkup()}).");
+        AnsiConsole.MarkupLineInterpolated($"Extension '{extension.Name}' removed (Id: {extension.Id}).");
+    }
+
+    private static async Task<string> DownloadVsixFromMarketplaceAsync(ExtensionInfo selectedExt)
+    {
+        var tempVsixPath = Path.Combine(Path.GetTempPath(), $"{selectedExt.Id}_{Guid.NewGuid()}.vsix");
+        AnsiConsole.MarkupLine("[blue]Downloading VSIX from Marketplace...[/]");
+        using var http = new HttpClient();
+        var vsixBytes = await http.GetByteArrayAsync(selectedExt.VsixUrl).ConfigureAwait(false);
+        await File.WriteAllBytesAsync(tempVsixPath, vsixBytes).ConfigureAwait(false);
+
+        return tempVsixPath;
+    }
+
+    /// <summary>
+    /// Updates an extension by its path for the specified Visual Studio installation.
+    /// </summary>
+    /// <param name="selectedExt">
+    /// The selected extension to update.
+    /// </param>
+    /// <param name="instance">
+    /// The Visual Studio instance to update the extension for.
+    /// </param>
+    /// <returns>
+    /// The output of the VSIXInstaller process.
+    /// </returns>
+    public static async Task<string> UpdateExtensionAsync(ExtensionInfo selectedExt, VisualStudioInstance instance)
+    {
+        var vsixPath = await DownloadVsixFromMarketplaceAsync(selectedExt).ConfigureAwait(false);
+
+        try
+        {
+            var vsixInstallerPath = Path.Combine(instance.InstallationPath!, "Common7", "IDE", "VSIXInstaller.exe");
+
+            if (!File.Exists(vsixInstallerPath))
+            {
+                AnsiConsole.MarkupLine("[red]VSIXInstaller.exe not found in this installation.[/]");
+
+                return string.Empty;
+            }
+
+            using var process = new Process();
+
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = vsixInstallerPath,
+                Arguments = $"/quiet /instanceIds:{instance.InstanceId} \"{vsixPath}\"",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            process.Start();
+            var output = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
+            await process.WaitForExitAsync().ConfigureAwait(false);
+
+            return output;
+        }
+        finally
+        {
+            try
+            {
+                File.Delete(vsixPath);
+            }
+            catch
+            {
+                AnsiConsole.MarkupLine("[red]Error deleting temporary VSIX file.[/]");
+            }
+        }
     }
 
     /// <summary>
@@ -176,10 +249,10 @@ public sealed class ExtensionManager
         var paths = new List<string>();
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        if (!string.IsNullOrEmpty(_instanceId) && !string.IsNullOrEmpty(_installationVersion))
+        if (_instance?.InstallationVersion is not null && _instance?.InstanceId is not null)
         {
-            var mainVersion = GetMainVersion(_installationVersion); // e.g. 17.0
-            var userPath = Path.Combine(localAppData, "Microsoft", "VisualStudio", $"{mainVersion}_{_instanceId}", EXTENSIONS_RELATIVE_PATH);
+            var mainVersion = GetMainVersion(_instance.InstallationVersion); // e.g. 17.0
+            var userPath = Path.Combine(localAppData, "Microsoft", "VisualStudio", $"{mainVersion}_{_instance.InstanceId}", EXTENSIONS_RELATIVE_PATH);
             paths.Add(userPath);
         }
 
