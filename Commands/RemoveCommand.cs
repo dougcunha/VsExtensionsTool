@@ -1,48 +1,62 @@
+using System.CommandLine;
+
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
 /// Command to remove an extension by Id or by selection for the selected Visual Studio instance.
 /// </summary>
-public sealed class RemoveCommand : ICommand
+public sealed class RemoveCommand : Command
 {
-    /// <inheritdoc />
-    public string Name
-        => "/remove";
+    private readonly Func<Task<VisualStudioInstance?>> _vsInstanceFactory;
 
     /// <inheritdoc />
-    public string Description
-        => "Remove an extension by its id.";
-
-    /// <inheritdoc />
-    public bool NeedsVsInstance
-        => true;
-
-    /// <inheritdoc />
-    public bool CanExecute(CommandContext context)
-        => context.Args.Length > 0
-            && context.Args[0] == "/remove";
-
-    /// <inheritdoc />
-    public async Task ExecuteAsync(CommandContext context)
+    public RemoveCommand(Func<Task<VisualStudioInstance?>> vsInstanceFactory) : base("rm", "Remove an extension by its id.")
     {
-        if (ICommand.ShowHelp(context.Args))
+        _vsInstanceFactory = vsInstanceFactory;
+
+        var idOption = new Option<string>
+        (
+            aliases: ["--id", "-i", "/id"],
+            description: "The id of the extension to remove."
+        );
+
+        var fileterOption = new Option<string>
+        (
+            aliases: ["--filter", "-f", "/filter"],
+            description: "Filter by extension name or id."
+        );
+
+        AddOption(idOption);
+        AddOption(fileterOption);
+
+        this.SetHandler
+        (
+            HandleAsync,
+            idOption,
+            fileterOption
+        );
+    }
+
+    
+    private async Task HandleAsync(string? id, string? filter)
+    {        
+        var vsInstance = await _vsInstanceFactory().ConfigureAwait(false);
+
+        if (vsInstance is null)
         {
-            PrintHelp();
+            AnsiConsole.MarkupLine("[red]No Visual Studio instance selected.[/]");
 
             return;
         }
 
-        var args = context.Args;
-        (string id, bool direct, string filter) = ParseArgs(args);
-
-        if (direct && !string.IsNullOrWhiteSpace(id))
+        if (!string.IsNullOrWhiteSpace(id))
         {
-            context.ExtensionManager.RemoveExtensionById(context.VisualStudioInstance!.InstallationPath!, id, context.VisualStudioInstance!.InstanceId!);
+            ExtensionManager.RemoveExtensionById(vsInstance, id);
 
             return;
         }
 
-        var extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
+        var extensions = ExtensionManager.GetExtensions(vsInstance, filter);
 
         if (extensions.Count == 0)
         {
@@ -83,35 +97,9 @@ public sealed class RemoveCommand : ICommand
                     foreach (var ext in selected)
                     {
                         AnsiConsole.MarkupLine($"[yellow]Removing extension:[/] {ext.Name}");
-                        context.ExtensionManager.RemoveExtensionById(context.VisualStudioInstance!.InstallationPath!, ext.Id, context.VisualStudioInstance!.InstanceId!);
+                        ExtensionManager.RemoveExtensionById(vsInstance, ext.Id);
                     }
                 }
             );
     }
-
-    private static (string id, bool direct, string filter) ParseArgs(string[] args)
-    {
-        var id = string.Empty;
-        var direct = false;
-        var filter = string.Empty;
-
-        if (args.Length <= 1)
-            return (id, direct, filter);
-
-        if (args[1] == "/id" && args.Length > 2)
-        {
-            id = args[2];
-            direct = true;
-        }
-        else
-        {
-            filter = args[1];
-        }
-
-        return (id, direct, filter);
-    }
-
-    /// <inheritdoc />
-    public void PrintHelp()
-        => AnsiConsole.WriteLine(Markup.Escape($"{Name} [<filter>] [/id <id>]   {Description}"));
 }

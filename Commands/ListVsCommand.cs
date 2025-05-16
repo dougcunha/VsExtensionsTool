@@ -1,41 +1,23 @@
+using System.CommandLine;
+
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
 /// Command to list all Visual Studio installations.
 /// </summary>
-public sealed class ListVsCommand : ICommand
+public sealed class ListVsCommand : Command
 {
-    /// <inheritdoc />
-    public string Name
-        => "/list_vs";
-
-    /// <inheritdoc />
-    public string Description
-        => "List all Visual Studio installations.";
-
-    /// <inheritdoc />
-    public bool NeedsVsInstance
-        => false;
-
-    /// <inheritdoc />
-    public bool CanExecute(CommandContext context)
-        => context.Args.Length > 0 && context.Args[0] == "/list_vs";
-
-    /// <inheritdoc />
-    public async Task ExecuteAsync(CommandContext context)
+    public ListVsCommand() : base("list_vs", "List all Visual Studio installations.")
     {
-        if (ICommand.ShowHelp(context.Args))
-        {
-            PrintHelp();
-
-            return;
-        }
-
+        this.SetHandler
+        (
+            HandleAsync
+        );
+    }    
+        
+    private async Task HandleAsync()
+    {
         var installations = await VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
         VisualStudioDisplayHelper.PrintInstallationsTable(installations);
     }
-
-    /// <inheritdoc />
-    public void PrintHelp()
-        => AnsiConsole.MarkupLine($"{Name}   {Description}");
 }

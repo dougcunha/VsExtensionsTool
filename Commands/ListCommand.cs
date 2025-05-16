@@ -1,51 +1,66 @@
+using System.CommandLine;
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
 /// Command to list all extensions for the selected Visual Studio instance.
 /// </summary>
-public sealed class ListCommand : ICommand
-{
-    /// <inheritdoc />
-    public string Name
-        => "/list";
+public sealed class ListCommand : Command
+{   
+    private readonly Func<Task<VisualStudioInstance?>> _vsInstanceFactory;
 
-    /// <inheritdoc />
-    public string Description
-        => "List all extensions for the selected instance, optionally filtered by name or id. Use /version to show the latest version from the marketplace. Use /outdated to show only outdated extensions.";
-
-    /// <inheritdoc />
-    public bool NeedsVsInstance
-        => true;
-
-    /// <inheritdoc />
-    public bool CanExecute(CommandContext context)
-        => context.Args.Length > 0 && context.Args[0] == "/list";
-
-    private static List<ExtensionInfo> GetExtensions(CommandContext context)
+    /// <summary>
+    /// Initializes the list command.
+    /// </summary>
+    public ListCommand(Func<Task<VisualStudioInstance?>> vsInstanceFactory) 
+        : base("list", "Lists all extensions for the selected Visual Studio instance.")
     {
-        var filter = context.Args
-            .Skip(1)
-            .FirstOrDefault(static arg => arg != "/version" && arg != "/outdated");
+        var filterOption = new Option<string?>
+        (
+            aliases: ["--filter", "-f", "/filter"],
+            description: "Filter by extension name or id."
+        );
 
-        return context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!, filter);
+        var versionOption = new Option<bool>
+        (
+            aliases: ["--version", "-v", "/version"],
+            description: "Show latest marketplace version."
+        );
+
+        var outdatedOption = new Option<bool>
+        (
+            aliases: ["--outdated", "-o", "/outdated"],
+            description: "Show only outdated extensions."
+        );
+
+        AddOption(filterOption);
+        AddOption(versionOption);
+        AddOption(outdatedOption);
+        _vsInstanceFactory = vsInstanceFactory;
+
+        this.SetHandler
+        (
+            HandleAsync,
+            filterOption,
+            versionOption,
+            outdatedOption
+        );
     }
 
-    /// <inheritdoc />
-    public async Task ExecuteAsync(CommandContext context)
-    {
-        if (ICommand.ShowHelp(context.Args))
+    private async Task HandleAsync(string? filter, bool version, bool outdated)
+    {        
+        var vsInstance = await _vsInstanceFactory().ConfigureAwait(false);
+        
+        if (vsInstance is null)
         {
-            PrintHelp();
+            AnsiConsole.MarkupLine("[red]No Visual Studio instance selected.[/]");
 
             return;
         }
 
-        var showMarketplaceVersion = context.Args.Any(static arg => arg == "/version");
-        var showOnlyOutdated = context.Args.Any(static arg => arg == "/outdated");
-        var extensions = GetExtensions(context);
+        var extensions = ExtensionManager.GetExtensions(vsInstance, filter);
 
-        if (showMarketplaceVersion || showOnlyOutdated)
-            await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, context.ExtensionManager).ConfigureAwait(false);
+        if (version || outdated)
+            await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, vsInstance).ConfigureAwait(false);
 
         if (extensions.Count == 0)
         {
@@ -56,13 +71,9 @@ public sealed class ListCommand : ICommand
 
         ExtensionListDisplayHelper.DisplayExtensions
         (
-            showOnlyOutdated
+            outdated
                 ? [.. extensions.Where(static ext => ext.IsOutdated)]
                 : extensions
         );
     }
-
-    /// <inheritdoc />
-    public void PrintHelp()
-        => AnsiConsole.MarkupLine($"{Name} [[<filter>]] [[/version]] [[/outdated]]   {Description}");
 }

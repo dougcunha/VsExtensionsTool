@@ -54,18 +54,10 @@ public sealed class ExtensionInfo
 /// <summary>
 /// Provides methods to list, filter, and remove Visual Studio extensions for a given installation.
 /// </summary>
-public sealed class ExtensionManager
+public static class ExtensionManager
 {
     private const string EXTENSIONS_RELATIVE_PATH = "Extensions";
     private const string VSIX_MANIFEST = "extension.vsixmanifest";
-    private VisualStudioInstance? _instance;
-
-    /// <summary>
-    /// Sets the instance ID and installation version for the Visual Studio instance to manage extensions for.
-    /// </summary>
-    /// <param name="instance">The instance of the Visual Studio installation.</param>
-    public void SetInstanceInfo(VisualStudioInstance instance)
-        => _instance = instance;
 
     /// <summary>
     /// Gets all extensions installed for the specified Visual Studio installation.
@@ -75,11 +67,11 @@ public sealed class ExtensionManager
     /// An optional filter string to search for extensions by name or Id.
     /// </param>
     /// <returns>List of ExtensionInfo objects representing each extension.</returns>
-    public List<ExtensionInfo> GetExtensions(string installationPath, string? filter = null)
+    public static List<ExtensionInfo> GetExtensions(VisualStudioInstance instance, string? filter = null)
     {
         var extensions = new List<ExtensionInfo>();
 
-        foreach (var dir in GetExtensionPaths(installationPath).Where(Directory.Exists).SelectMany(Directory.GetDirectories))
+        foreach (var dir in GetExtensionPaths(instance.InstallationPath!, instance).Where(Directory.Exists).SelectMany(Directory.GetDirectories))
         {
             var manifestPath = Path.Combine(dir, VSIX_MANIFEST);
 
@@ -114,11 +106,11 @@ public sealed class ExtensionManager
         return [.. extensions.OrderBy(static e => e.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
 
-    public async Task PopulateExtensionInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, Action<ExtensionInfo> onPopulate)
+    public static async Task PopulateExtensionInfoFromMarketplaceAsync(VisualStudioInstance instance, List<ExtensionInfo> extensions, Action<ExtensionInfo> onPopulate)
     {
         foreach (var ext in extensions)
         {
-            await MarketplaceHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, _instance!);
+            await MarketplaceHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, instance!);
             onPopulate(ext);
         }
     }
@@ -131,10 +123,10 @@ public sealed class ExtensionManager
     /// <param name="instanceId">
     /// The instance ID of the Visual Studio installation.
     /// </param>
-    public void RemoveExtensionById(string installationPath, string id, string instanceId)
+    public static void RemoveExtensionById(VisualStudioInstance instance, string id)
     {
         const string VSIX_INSTALLER_RELATIVE_PATH = "Common7/IDE/VSIXInstaller.exe";
-        var vsixInstallerPath = Path.Combine(installationPath, VSIX_INSTALLER_RELATIVE_PATH);
+        var vsixInstallerPath = Path.Combine(instance.InstallationPath!, VSIX_INSTALLER_RELATIVE_PATH);
 
         if (!File.Exists(vsixInstallerPath))
         {
@@ -143,7 +135,7 @@ public sealed class ExtensionManager
             return;
         }
 
-        var extensions = GetExtensions(installationPath);
+        var extensions = GetExtensions(instance, null);
         var extension = extensions.FirstOrDefault(e => e.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
 
         if (extension == null)
@@ -158,7 +150,7 @@ public sealed class ExtensionManager
         process.StartInfo = new ProcessStartInfo
         {
             FileName = vsixInstallerPath,
-            Arguments = $"/uninstall:{extension.Id} /quiet /sp /instanceIds:{instanceId}",
+            Arguments = $"/uninstall:{extension.Id} /quiet /sp /instanceIds:{instance.InstanceId}",
             RedirectStandardOutput = true,
             UseShellExecute = false,
             CreateNoWindow = true
@@ -243,16 +235,17 @@ public sealed class ExtensionManager
     /// Returns the possible extension folders for the current Visual Studio instance.
     /// </summary>
     /// <param name="installationPath">The installation path of Visual Studio.</param>
+    /// <param name="instance">A VisualStudioInstance para contexto do usuário.</param>
     /// <returns>List of possible extension folder paths.</returns>
-    private List<string> GetExtensionPaths(string installationPath)
+    private static List<string> GetExtensionPaths(string installationPath, VisualStudioInstance? instance)
     {
         var paths = new List<string>();
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        if (_instance?.InstallationVersion is not null && _instance?.InstanceId is not null)
+        if (instance?.InstallationVersion is not null && instance?.InstanceId is not null)
         {
-            var mainVersion = GetMainVersion(_instance.InstallationVersion); // e.g. 17.0
-            var userPath = Path.Combine(localAppData, "Microsoft", "VisualStudio", $"{mainVersion}_{_instance.InstanceId}", EXTENSIONS_RELATIVE_PATH);
+            var mainVersion = GetMainVersion(instance.InstallationVersion); // e.g. 17.0
+            var userPath = Path.Combine(localAppData, "Microsoft", "VisualStudio", $"{mainVersion}_{instance.InstanceId}", EXTENSIONS_RELATIVE_PATH);
             paths.Add(userPath);
         }
 

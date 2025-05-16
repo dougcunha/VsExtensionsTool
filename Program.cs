@@ -1,15 +1,24 @@
-﻿namespace VsExtensionsTool;
+﻿using System.CommandLine;
+using System.Diagnostics;
+using VsExtensionsTool;
+using VsExtensionsTool.Commands;
 
-file static class Program
+var rootCommand = new RootCommand("VsExtensionsTool - Visual Studio Extensions Manager");
+VisualStudioInstance? vsInstance = null;
+rootCommand.AddCommand(new ListCommand(VsInstanceFactory));
+rootCommand.AddCommand(new ListVsCommand());
+rootCommand.AddCommand(new RemoveCommand(VsInstanceFactory));
+rootCommand.AddCommand(new UpdateCommand(VsInstanceFactory));
+
+await rootCommand.InvokeAsync(args);
+
+if (Debugger.IsAttached)
 {
-    /// <summary>
-    /// Application entry point.
-    /// </summary>
-    public static Task Main(string[] args)
-    {
-        var extManager = new ExtensionManager();
-        var dispatcher = new CommandDispatcher(extManager);
-
-        return dispatcher.DispatchAsync(args);
-    }
+    Console.WriteLine("Press any key to exit...");
+    Console.Read();
 }
+
+Task<VisualStudioInstance?> VsInstanceFactory() 
+    => vsInstance != null
+        ? Task.FromResult<VisualStudioInstance?>(vsInstance)
+        : VisualStudioManager.SelectVisualStudioInstanceAsync();

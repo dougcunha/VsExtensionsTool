@@ -1,41 +1,42 @@
+using System.CommandLine;
+
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
 /// Command to update outdated Visual Studio extensions.
 /// </summary>
-public sealed class UpdateCommand : ICommand
+public sealed class UpdateCommand : Command
 {
-    public string Name
-        => "/update";
+    private readonly Func<Task<VisualStudioInstance?>> _vsInstanceFactory;
 
-    public string Description
-        => "List all outdated extensions and update the selected one.";
-
-    public bool NeedsVsInstance
-        => true;
-
-    public bool CanExecute(CommandContext context)
-        => context.Args.Length > 0 && context.Args[0] == "/update";
-
-    public async Task ExecuteAsync(CommandContext context)
+    public UpdateCommand(Func<Task<VisualStudioInstance?>> vsInstanceFactory)
+        : base("upd", "List all outdated extensions and update the selected one.")
     {
-        if (ICommand.ShowHelp(context.Args))
+        _vsInstanceFactory = vsInstanceFactory;
+
+        this.SetHandler(HandleAsync);
+    }
+
+    private async Task HandleAsync()
+    {
+        var vsInstance = await _vsInstanceFactory().ConfigureAwait(false);
+
+        if (vsInstance is null)
         {
-            PrintHelp();
+            AnsiConsole.MarkupLine("[red]No Visual Studio instance selected.[/]");
 
             return;
         }
 
-        var extensions = context.ExtensionManager.GetExtensions(context.VisualStudioInstance!.InstallationPath!);
+        var extensions = ExtensionManager.GetExtensions(vsInstance);
         AnsiConsole.MarkupLine("[bold]Checking for outdated extensions...[/]");
-        await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, context.ExtensionManager).ConfigureAwait(false);
+        await ExtensionListDisplayHelper.PopulateExtensionsInfoFromMarketplaceAsync(extensions, vsInstance).ConfigureAwait(false);
 
-        List<ExtensionInfo> outdated = [.. extensions.Where(static ext => ext.IsOutdated)];
+        var outdated = extensions.Where(static ext => ext.IsOutdated).ToList(); 
 
         if (outdated.Count == 0)
         {
             AnsiConsole.MarkupLine("[green]All extensions are up to date![/]");
-
             return;
         }
 
@@ -47,7 +48,7 @@ public sealed class UpdateCommand : ICommand
                 .PageSize(20)
                 .MoreChoicesText("[grey](Move up and down to reveal more extensions)[/]")
                 .InstructionsText("[grey](Press [blue]<space>[/] to toggle, [green]<enter>[/] to accept)[/]")
-                .AddChoices([.. outdated.Select(static e => ($"{e.Name} ({e.InstalledVersion} » {e.LatestVersion})", e.Id))])
+                .AddChoiceGroup(("Select all", ""), [.. outdated.Select(static e => ($"{e.Name} ({e.InstalledVersion} Â» {e.LatestVersion})", e.Id))])
                 .UseConverter(static e => e.Item1)
         ).ConfigureAwait(false);
 
@@ -70,29 +71,21 @@ public sealed class UpdateCommand : ICommand
 
                     foreach (var ext in selected)
                     {
-                        var info = outdated.First(e => e.Id == ext.Id);
+                        var info = outdated.First(e => e.Id == ext.Item2);
                         AnsiConsole.MarkupLine($"[yellow]Updating extension:[/] {ext.Item1}");
-                        await ApplyUpdateAsync(context, info).ConfigureAwait(false);
+                        await ApplyUpdateAsync(vsInstance, info).ConfigureAwait(false);
                     }
                 }
             );
     }
 
-    private static async Task ApplyUpdateAsync(CommandContext context, ExtensionInfo selectedExt)
+    private static async Task ApplyUpdateAsync(VisualStudioInstance vsInstance, ExtensionInfo selectedExt)
     {
-        await AnsiConsole.Status()
-            .Spinner(Spinner.Known.Dots2)
-            .SpinnerStyle(Style.Parse("green"))
-            .StartAsync("[blue]Running VSIXInstaller...[/]", async _ =>
-            {
-                var output = await ExtensionManager.UpdateExtensionAsync(selectedExt, context.VisualStudioInstance!)
-                    .ConfigureAwait(false);
+        var output = await ExtensionManager
+            .UpdateExtensionAsync(selectedExt, vsInstance)
+            .ConfigureAwait(false);
 
-                AnsiConsole.WriteLine(output);
-                AnsiConsole.MarkupLine($"[green]Extension '{selectedExt.Name}' updated![/]");
-            }).ConfigureAwait(false);
+        AnsiConsole.WriteLine(output);
+        AnsiConsole.MarkupLine($"[green]Extension '{selectedExt.Name}' updated![/]");
     }
-
-    public void PrintHelp()
-        => AnsiConsole.MarkupLine($"{Name}   {Description}");
 }
