@@ -23,7 +23,7 @@ I do not plan to add support for VSCode, as its extension management interface i
 - List all Visual Studio installations
 - List installed extensions, with optional filtering by name or id
 - Show installed version and latest version available on the Marketplace
-- Remove extensions by id
+- Remove extensions by id or interactively
 - Update extensions
 - Beautiful and interactive console output powered by [Spectre.Console](https://spectreconsole.net/)
 
@@ -62,17 +62,35 @@ If the Marketplace version check stops working, it is likely due to changes in t
 
 ## Usage
 
+Now the commands use the modern System.CommandLine syntax, with intuitive names and aliases:
+
 ```sh
-VsExtensionsTool.exe /list_vs
-VsExtensionsTool.exe /list [filter] [/version] [/outdated]
-VsExtensionsTool.exe /remove [<id>]
-VsExtensionsTool.exe /update
+VsExtensionsTool.exe list-vs
+VsExtensionsTool.exe list [--filter <name-or-id>] [--version] [--outdated]
+VsExtensionsTool.exe rm [--id <id>] [--filter <name-or-id>]
+VsExtensionsTool.exe upd
 ```
 
-- `/list_vs`: Lists all Visual Studio installations
-- `/list`: Lists extensions for the selected instance (optionally filter by name/id, `/version` shows Marketplace version, `/outdated` shows only outdated extensions)
-- `/remove <id>`: Removes an extension by id
-- `/update`: Lists all outdated extensions and allows you to update the selected one
+### Commands and options
+
+- `list-vs` : Lists all Visual Studio installations
+- `list` : Lists extensions for the selected instance
+  - `--filter`, `-f`, `/filter` : Filter by extension name or id
+  - `--version`, `-v`, `/version` : Show latest Marketplace version
+  - `--outdated`, `-o`, `/outdated` : Show only outdated extensions
+- `rm` : Remove an extension
+  - `--id`, `-i`, `/id` : Id of the extension to remove
+  - `--filter`, `-f`, `/filter` : Filter extensions for interactive selection
+- `upd` : Lists all outdated extensions and allows you to update the selected ones
+
+Examples:
+
+```sh
+VsExtensionsTool.exe list-vs
+VsExtensionsTool.exe list --filter="ReSharper" --version
+VsExtensionsTool.exe rm --id="Company.ExtensionId"
+VsExtensionsTool.exe upd
+```
 
 ## Screenshots
 
