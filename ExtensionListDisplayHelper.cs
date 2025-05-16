@@ -70,7 +70,7 @@ public static class ExtensionListDisplayHelper
             AnsiConsole.Write(table);
     }
 
-    public static async Task PopulateExtensionsInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, ExtensionManager extensionManager)
+    public static async Task PopulateExtensionsInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, VisualStudioInstance instance)
     {
         AnsiConsole.MarkupLine("[bold]Fetching extensions versions...[/]");
         var progress = AnsiConsole.Progress();
@@ -93,9 +93,10 @@ public static class ExtensionListDisplayHelper
             {
                 var progressTask = progressCtx.AddTask("Checking Marketplace...", maxValue: extensions.Count);
 
-                await extensionManager
+                await ExtensionManager
                     .PopulateExtensionInfoFromMarketplaceAsync
                     (
+                        instance,
                         extensions,
                         ext =>
                         {
