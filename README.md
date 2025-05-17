@@ -1,5 +1,7 @@
 # VsExtensionsTool
 
+![Build Status](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/build.yml/badge.svg?branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ## Table of Contents
 
 - [Motivation](#motivation)
