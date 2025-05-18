@@ -1,8 +1,10 @@
 using System.Text.Json;
 
-namespace VsExtensionsTool;
+namespace VsExtensionsTool.Managers;
 
 using System.Diagnostics;
+using VsExtensionsTool.Helpers;
+using VsExtensionsTool.Models;
 
 /// <summary>
 /// Provides methods to detect and retrieve Visual Studio installations using vswhere.

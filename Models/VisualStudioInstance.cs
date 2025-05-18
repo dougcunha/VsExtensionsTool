@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace VsExtensionsTool;
+namespace VsExtensionsTool.Models;
 
 /// <summary>
 /// Represents information about a Visual Studio installation.

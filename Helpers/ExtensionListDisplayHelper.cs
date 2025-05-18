@@ -1,4 +1,7 @@
-namespace VsExtensionsTool;
+using VsExtensionsTool.Managers;
+using VsExtensionsTool.Models;
+
+namespace VsExtensionsTool.Helpers;
 
 /// <summary>
 /// Responsible for displaying extension lists with support for progress and marketplace queries.

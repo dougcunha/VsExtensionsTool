@@ -1,7 +1,8 @@
 ﻿using System.CommandLine;
 using System.Diagnostics;
-using VsExtensionsTool;
 using VsExtensionsTool.Commands;
+using VsExtensionsTool.Managers;
+using VsExtensionsTool.Models;
 
 var rootCommand = new RootCommand("VsExtensionsTool - Visual Studio Extensions Manager");
 VisualStudioInstance? vsInstance = null;

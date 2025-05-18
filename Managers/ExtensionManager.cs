@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Text.Json;
 using System.Xml.Linq;
+using VsExtensionsTool.Helpers;
+using VsExtensionsTool.Models;
 
-namespace VsExtensionsTool;
+namespace VsExtensionsTool.Managers;
 
 /// <summary>
 /// Represents information about a Visual Studio extension.
