@@ -2,14 +2,37 @@
 using System.Diagnostics;
 using VsExtensionsTool.Commands;
 using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using VsExtensionsTool.Helpers;
+using System.IO.Abstractions;
+
+var builder = Host.CreateApplicationBuilder(args);
+var services = builder.Services;
+var console = AnsiConsole.Console;
+services.AddSingleton(console);
+services.AddSingleton<IExtensionListDisplayHelper, ExtensionListDisplayHelper>();
+services.AddSingleton<IMarketplaceHelper, MarketplaceHelper>();
+services.AddSingleton<IVisualStudioDisplayHelper, VisualStudioDisplayHelper>();
+services.AddSingleton<IVisualStudioManager, VisualStudioManager>();
+services.AddSingleton<IExtensionManager, ExtensionManager>();
+services.AddTransient<IFileSystem, FileSystem>();
+services.AddTransient<IProcessRunner, ProcessRunner>();
+services.AddTransient<ListCommand>();
+services.AddTransient<ListVsCommand>();
+services.AddTransient<RemoveCommand>();
+services.AddTransient<UpdateCommand>();
+services.AddTransient<IXDocumentLoader, XDocumentLoader>();
+
+using var host = builder.Build();
+await host.StartAsync();
 
 var rootCommand = new RootCommand("VsExtensionsTool - Visual Studio Extensions Manager");
-VisualStudioInstance? vsInstance = null;
-rootCommand.AddCommand(new ListCommand(VsInstanceFactory));
-rootCommand.AddCommand(new ListVsCommand());
-rootCommand.AddCommand(new RemoveCommand(VsInstanceFactory));
-rootCommand.AddCommand(new UpdateCommand(VsInstanceFactory));
+
+rootCommand.AddCommand(host.Services.GetRequiredService<ListCommand>());
+rootCommand.AddCommand(host.Services.GetRequiredService<ListVsCommand>());
+rootCommand.AddCommand(host.Services.GetRequiredService<RemoveCommand>());
+rootCommand.AddCommand(host.Services.GetRequiredService<UpdateCommand>());
 
 await rootCommand.InvokeAsync(args);
 
@@ -18,8 +41,3 @@ if (Debugger.IsAttached)
     Console.WriteLine("Press any key to exit...");
     Console.Read();
 }
-
-Task<VisualStudioInstance?> VsInstanceFactory() 
-    => vsInstance != null
-        ? Task.FromResult<VisualStudioInstance?>(vsInstance)
-        : VisualStudioManager.SelectVisualStudioInstanceAsync();

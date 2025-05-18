@@ -1,20 +1,31 @@
 using System.CommandLine;
+using VsExtensionsTool.Helpers;
 using VsExtensionsTool.Managers;
 using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
-/// Command to remove an extension by Id or by selection for the selected Visual Studio instance.
+/// Command to remove Visual Studio extensions.
 /// </summary>
 public sealed class RemoveCommand : Command
 {
-    private readonly Func<Task<VisualStudioInstance?>> _vsInstanceFactory;
+    private readonly IVisualStudioManager _vsManager;
+    private readonly IExtensionManager _extensionManager;
+    private readonly IAnsiConsole _console;
 
     /// <inheritdoc />
-    public RemoveCommand(Func<Task<VisualStudioInstance?>> vsInstanceFactory) : base("rm", "Remove an extension by its id.")
+    public RemoveCommand
+    (
+        IVisualStudioManager vsManager,
+        IExtensionManager extensionManager,
+        IAnsiConsole console
+    ) 
+        : base("rm", "Remove an extension by its id.")
     {
-        _vsInstanceFactory = vsInstanceFactory;
+        _vsManager = vsManager;
+        _extensionManager = extensionManager;
+        _console = console;
 
         var idOption = new Option<string>
         (
@@ -42,32 +53,32 @@ public sealed class RemoveCommand : Command
     
     private async Task HandleAsync(string? id, string? filter)
     {        
-        var vsInstance = await _vsInstanceFactory().ConfigureAwait(false);
+        var vsInstance = await _vsManager.SelectVisualStudioInstanceAsync().ConfigureAwait(false);
 
         if (vsInstance is null)
         {
-            AnsiConsole.MarkupLine("[red]No Visual Studio instance selected.[/]");
+            _console.MarkupLine("[red]No Visual Studio instance selected.[/]");
 
             return;
         }
 
         if (!string.IsNullOrWhiteSpace(id))
         {
-            ExtensionManager.RemoveExtensionById(vsInstance, id);
+            await _extensionManager.RemoveExtensionByIdAsync(vsInstance, id).ConfigureAwait(false);
 
             return;
         }
 
-        var extensions = ExtensionManager.GetExtensions(vsInstance, filter);
+        var extensions = _extensionManager.GetExtensions(vsInstance, filter);
 
         if (extensions.Count == 0)
         {
-            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
+            _console.MarkupLine("[red]No extensions found.[/]");
 
             return;
         }
 
-        var selected = await AnsiConsole.PromptAsync
+        var selected = await _console.PromptAsync
         (
             new MultiSelectionPrompt<(string Name, string Id)>()
                 .Title("Select the extensions to [red]remove[/]:")
@@ -75,33 +86,31 @@ public sealed class RemoveCommand : Command
                 .PageSize(20)
                 .MoreChoicesText("[grey](Move up and down to reveal more extensions)[/]")
                 .InstructionsText("[grey](Press [blue]<space>[/] to toggle, [green]<enter>[/] to accept)[/]")
-                .AddChoices([.. extensions.Select(static e => (e.Name, e.Id))])
-                .UseConverter(static e => e.Name)
+                .AddChoiceGroup(("Select all", ""), [.. extensions.Select(static e => ($"{e.Name} ({e.InstalledVersion})", e.Id))])
+                .UseConverter(static e => e.Item1)
         ).ConfigureAwait(false);
 
         if (selected.Count == 0)
         {
-            AnsiConsole.MarkupLine("[yellow]No extensions selected for removal.[/]");
+            _console.MarkupLine("[yellow]No extensions selected for removal.[/]");
 
             return;
         }
 
-        AnsiConsole
-            .Status()
-            .Start
-            (
-                "Removing selected extensions...",
-                ctx =>
-                {
-                    ctx.Spinner(Spinner.Known.Dots2);
-                    ctx.SpinnerStyle(Style.Parse("green"));
+        await _console.Status().StartAsync
+        (
+            "Removing selected extensions...",
+            async ctx =>
+            {
+                ctx.Spinner(Spinner.Known.Dots2);
+                ctx.SpinnerStyle(Style.Parse("red"));
 
-                    foreach (var ext in selected)
-                    {
-                        AnsiConsole.MarkupLine($"[yellow]Removing extension:[/] {ext.Name}");
-                        ExtensionManager.RemoveExtensionById(vsInstance, ext.Id);
-                    }
+                foreach (var ext in selected)
+                {
+                    _console.MarkupLine($"[yellow]Removing extension:[/] {ext.Item1}");
+                    await _extensionManager.RemoveExtensionByIdAsync(vsInstance, ext.Item2).ConfigureAwait(false);
                 }
-            );
+            }
+        ).ConfigureAwait(false);
     }
 }

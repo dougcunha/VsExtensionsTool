@@ -1,0 +1,1023 @@
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Program.cs
+FN:8,System.Void Program/<<Main>$>d__0::MoveNext()
+FNDA:0,System.Void Program/<<Main>$>d__0::MoveNext()
+DA:9,0
+DA:10,0
+DA:11,0
+DA:12,0
+DA:13,0
+DA:14,0
+DA:15,0
+DA:16,0
+DA:17,0
+DA:18,0
+DA:19,0
+DA:20,0
+DA:21,0
+DA:23,0
+DA:24,0
+DA:26,0
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:33,0
+DA:35,0
+DA:36,0
+DA:37,0
+DA:38,0
+DA:39,0
+BRDA:35,583,0,0
+BRDA:35,583,1,0
+LF:26
+LH:0
+BRF:2
+BRH:0
+FNF:1
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Models\ExtensionInfo.cs
+FN:10,System.String VsExtensionsTool.Models.ExtensionInfo::get_VsixId()
+FNDA:0,System.String VsExtensionsTool.Models.ExtensionInfo::get_VsixId()
+DA:11,0
+FN:15,System.String VsExtensionsTool.Models.ExtensionInfo::get_Name()
+FNDA:23,System.String VsExtensionsTool.Models.ExtensionInfo::get_Name()
+DA:16,23
+FN:20,System.String VsExtensionsTool.Models.ExtensionInfo::get_Id()
+FNDA:23,System.String VsExtensionsTool.Models.ExtensionInfo::get_Id()
+DA:21,23
+FN:25,System.String VsExtensionsTool.Models.ExtensionInfo::get_Publisher()
+FNDA:8,System.String VsExtensionsTool.Models.ExtensionInfo::get_Publisher()
+DA:26,8
+FN:30,System.String VsExtensionsTool.Models.ExtensionInfo::get_InstalledVersion()
+FNDA:20,System.String VsExtensionsTool.Models.ExtensionInfo::get_InstalledVersion()
+DA:31,20
+FN:35,System.String VsExtensionsTool.Models.ExtensionInfo::get_LatestVersion()
+FNDA:16,System.String VsExtensionsTool.Models.ExtensionInfo::get_LatestVersion()
+DA:36,16
+FN:40,System.String VsExtensionsTool.Models.ExtensionInfo::get_VsixUrl()
+FNDA:0,System.String VsExtensionsTool.Models.ExtensionInfo::get_VsixUrl()
+DA:41,0
+FN:46,System.Boolean VsExtensionsTool.Models.ExtensionInfo::get_IsOutdated()
+FNDA:2,System.Boolean VsExtensionsTool.Models.ExtensionInfo::get_IsOutdated()
+DA:47,2
+BRDA:47,18,0,2
+BRDA:47,18,1,0
+LF:8
+LH:6
+BRF:2
+BRH:1
+FNF:8
+FNH:6
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Models\VisualStudioInstance.cs
+FN:13,System.String VsExtensionsTool.Models.VisualStudioInstance::get_DisplayName()
+FNDA:12,System.String VsExtensionsTool.Models.VisualStudioInstance::get_DisplayName()
+DA:14,12
+FN:19,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstallationPath()
+FNDA:3,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstallationPath()
+DA:20,3
+FN:25,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ProductPath()
+FNDA:0,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ProductPath()
+DA:26,0
+FN:31,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ChannelId()
+FNDA:1,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ChannelId()
+DA:32,1
+FN:37,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ChannelUri()
+FNDA:0,System.String VsExtensionsTool.Models.VisualStudioInstance::get_ChannelUri()
+DA:38,0
+FN:43,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstallationVersion()
+FNDA:3,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstallationVersion()
+DA:44,3
+FN:49,System.Boolean VsExtensionsTool.Models.VisualStudioInstance::get_IsPrerelease()
+FNDA:0,System.Boolean VsExtensionsTool.Models.VisualStudioInstance::get_IsPrerelease()
+DA:50,0
+FN:55,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstanceId()
+FNDA:0,System.String VsExtensionsTool.Models.VisualStudioInstance::get_InstanceId()
+DA:56,0
+LF:8
+LH:4
+BRF:0
+BRH:0
+FNF:8
+FNH:4
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Managers\ExtensionManager.cs
+FN:25,System.Collections.Generic.List`1<VsExtensionsTool.Models.ExtensionInfo> VsExtensionsTool.Managers.ExtensionManager::GetExtensions(VsExtensionsTool.Models.VisualStudioInstance,System.String)
+FNDA:0,System.Collections.Generic.List`1<VsExtensionsTool.Models.ExtensionInfo> VsExtensionsTool.Managers.ExtensionManager::GetExtensions(VsExtensionsTool.Models.VisualStudioInstance,System.String)
+DA:26,0
+DA:27,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+DA:35,0
+DA:36,0
+DA:38,0
+DA:40,0
+DA:41,0
+DA:42,0
+DA:44,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+DA:52,0
+DA:53,0
+DA:54,0
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:59,0
+DA:60,0
+DA:61,0
+DA:63,0
+DA:64,0
+BRDA:29,182,1,0
+BRDA:35,141,1,0
+BRDA:40,164,0,0
+BRDA:40,164,1,0
+BRDA:35,141,0,0
+BRDA:29,182,0,0
+BRDA:44,215,0,0
+BRDA:44,215,1,0
+BRDA:49,18,0,0
+BRDA:49,18,1,0
+FN:88,System.Void VsExtensionsTool.Managers.ExtensionManager::RemoveExtensionById(VsExtensionsTool.Models.VisualStudioInstance,System.String)
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager::RemoveExtensionById(VsExtensionsTool.Models.VisualStudioInstance,System.String)
+DA:89,0
+DA:91,0
+DA:93,0
+DA:94,0
+DA:95,0
+DA:97,0
+DA:100,0
+DA:101,0
+DA:103,0
+DA:104,0
+DA:105,0
+DA:107,0
+DA:110,0
+DA:112,0
+DA:113,0
+DA:114,0
+DA:115,0
+DA:116,0
+DA:117,0
+DA:118,0
+DA:119,0
+DA:121,0
+DA:122,0
+DA:123,0
+DA:124,0
+DA:125,0
+DA:126,0
+BRDA:93,44,0,0
+BRDA:93,44,1,0
+BRDA:103,105,0,0
+BRDA:103,105,1,0
+FN:202,System.Collections.Generic.List`1<System.String> VsExtensionsTool.Managers.ExtensionManager::GetExtensionPaths(System.String,VsExtensionsTool.Models.VisualStudioInstance)
+FNDA:0,System.Collections.Generic.List`1<System.String> VsExtensionsTool.Managers.ExtensionManager::GetExtensionPaths(System.String,VsExtensionsTool.Models.VisualStudioInstance)
+DA:203,0
+DA:204,0
+DA:205,0
+DA:207,0
+DA:208,0
+DA:209,0
+DA:210,0
+DA:211,0
+DA:212,0
+DA:214,0
+DA:215,0
+DA:217,0
+DA:218,0
+BRDA:207,16,0,0
+BRDA:207,16,1,0
+BRDA:207,27,0,0
+BRDA:207,30,0,0
+BRDA:207,30,1,0
+BRDA:207,27,1,0
+BRDA:207,54,0,0
+BRDA:207,54,1,0
+FN:225,System.String VsExtensionsTool.Managers.ExtensionManager::GetMainVersion(System.String)
+FNDA:0,System.String VsExtensionsTool.Managers.ExtensionManager::GetMainVersion(System.String)
+DA:226,0
+DA:227,0
+DA:229,0
+DA:230,0
+DA:231,0
+DA:232,0
+BRDA:229,13,0,0
+BRDA:229,13,1,0
+FN:239,VsExtensionsTool.Models.ExtensionInfo VsExtensionsTool.Managers.ExtensionManager::ReadManifest(System.String)
+FNDA:0,VsExtensionsTool.Models.ExtensionInfo VsExtensionsTool.Managers.ExtensionManager::ReadManifest(System.String)
+DA:240,0
+DA:242,0
+DA:243,0
+DA:244,0
+DA:245,0
+DA:247,0
+DA:248,0
+DA:250,0
+DA:251,0
+DA:252,0
+DA:253,0
+DA:254,0
+DA:255,0
+DA:256,0
+DA:258,0
+DA:260,0
+DA:261,0
+DA:262,0
+DA:264,0
+DA:266,0
+BRDA:244,16,0,0
+BRDA:244,16,1,0
+BRDA:244,28,0,0
+BRDA:244,28,1,0
+BRDA:247,73,0,0
+BRDA:247,73,1,0
+BRDA:251,102,0,0
+BRDA:251,102,1,0
+BRDA:251,124,0,0
+BRDA:251,124,1,0
+BRDA:251,136,0,0
+BRDA:251,136,1,0
+BRDA:252,147,0,0
+BRDA:252,147,1,0
+BRDA:252,169,0,0
+BRDA:252,169,1,0
+BRDA:252,181,0,0
+BRDA:252,181,1,0
+BRDA:253,209,0,0
+BRDA:253,209,1,0
+BRDA:253,221,0,0
+BRDA:253,221,1,0
+BRDA:254,232,0,0
+BRDA:254,232,1,0
+BRDA:254,254,0,0
+BRDA:254,254,1,0
+BRDA:254,266,0,0
+BRDA:254,266,1,0
+FN:268,System.Void VsExtensionsTool.Managers.ExtensionManager::PopulateFromManifestJson(System.String,VsExtensionsTool.Models.ExtensionInfo)
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager::PopulateFromManifestJson(System.String,VsExtensionsTool.Models.ExtensionInfo)
+DA:269,0
+DA:270,0
+DA:272,0
+DA:273,0
+DA:276,0
+DA:277,0
+DA:278,0
+DA:280,0
+DA:281,0
+DA:282,0
+DA:283,0
+DA:284,0
+DA:285,0
+DA:286,0
+BRDA:272,52,1,0
+BRDA:272,52,0,0
+FN:11,System.Void VsExtensionsTool.Managers.ExtensionManager::.ctor(Spectre.Console.IAnsiConsole,VsExtensionsTool.Helpers.IMarketplaceHelper)
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager::.ctor(Spectre.Console.IAnsiConsole,VsExtensionsTool.Helpers.IMarketplaceHelper)
+DA:12,0
+FN:128,System.Void VsExtensionsTool.Managers.ExtensionManager/<DownloadVsixFromMarketplaceAsync>d__8::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager/<DownloadVsixFromMarketplaceAsync>d__8::MoveNext()
+DA:129,0
+DA:130,0
+DA:131,0
+DA:132,0
+DA:133,0
+DA:134,0
+DA:136,0
+DA:137,0
+FN:71,System.Void VsExtensionsTool.Managers.ExtensionManager/<PopulateExtensionInfoFromMarketplaceAsync>d__6::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager/<PopulateExtensionInfoFromMarketplaceAsync>d__6::MoveNext()
+DA:72,0
+DA:73,0
+DA:74,0
+DA:75,0
+DA:76,0
+DA:77,0
+DA:78,0
+BRDA:73,219,1,0
+BRDA:73,219,0,0
+FN:151,System.Void VsExtensionsTool.Managers.ExtensionManager/<UpdateExtensionAsync>d__9::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.ExtensionManager/<UpdateExtensionAsync>d__9::MoveNext()
+DA:152,0
+DA:153,0
+DA:156,0
+DA:157,0
+DA:159,0
+DA:160,0
+DA:161,0
+DA:163,0
+DA:166,0
+DA:168,0
+DA:169,0
+DA:170,0
+DA:171,0
+DA:172,0
+DA:173,0
+DA:174,0
+DA:175,0
+DA:177,0
+DA:178,0
+DA:179,0
+DA:181,0
+DA:184,0
+DA:186,0
+DA:187,0
+DA:188,0
+DA:189,0
+DA:190,0
+DA:191,0
+DA:192,0
+DA:193,0
+DA:194,0
+BRDA:152,16,0,0
+BRDA:152,16,1,0
+BRDA:153,174,0,0
+BRDA:159,236,0,0
+BRDA:159,236,1,0
+BRDA:153,174,1,0
+LF:160
+LH:0
+BRF:62
+BRH:0
+FNF:10
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Managers\VisualStudioManager.cs
+FN:19,VsExtensionsTool.Models.VisualStudioInstance VsExtensionsTool.Managers.VisualStudioManager::get_VisualStudio()
+FNDA:0,VsExtensionsTool.Models.VisualStudioInstance VsExtensionsTool.Managers.VisualStudioManager::get_VisualStudio()
+DA:20,0
+FN:11,System.Void VsExtensionsTool.Managers.VisualStudioManager::.ctor(Spectre.Console.IAnsiConsole,VsExtensionsTool.Helpers.IVisualStudioDisplayHelper)
+FNDA:0,System.Void VsExtensionsTool.Managers.VisualStudioManager::.ctor(Spectre.Console.IAnsiConsole,VsExtensionsTool.Helpers.IVisualStudioDisplayHelper)
+DA:12,0
+FN:33,System.Void VsExtensionsTool.Managers.VisualStudioManager/<>c__DisplayClass9_0/<<GetVisualStudioInstallationsAsync>b__0>d::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.VisualStudioManager/<>c__DisplayClass9_0/<<GetVisualStudioInstallationsAsync>b__0>d::MoveNext()
+DA:34,0
+DA:35,0
+DA:36,0
+DA:38,0
+DA:39,0
+DA:40,0
+DA:41,0
+DA:42,0
+DA:43,0
+DA:44,0
+DA:45,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+FN:26,System.Void VsExtensionsTool.Managers.VisualStudioManager/<GetVisualStudioInstallationsAsync>d__9::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.VisualStudioManager/<GetVisualStudioInstallationsAsync>d__9::MoveNext()
+DA:27,0
+DA:28,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:33,0
+DA:37,0
+DA:46,0
+DA:52,0
+DA:53,0
+DA:54,0
+DA:55,0
+BRDA:52,229,0,0
+BRDA:52,249,0,0
+BRDA:52,229,1,0
+BRDA:52,249,1,0
+FN:58,System.Void VsExtensionsTool.Managers.VisualStudioManager/<SelectVisualStudioInstanceAsync>d__10::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Managers.VisualStudioManager/<SelectVisualStudioInstanceAsync>d__10::MoveNext()
+DA:59,0
+DA:60,0
+DA:61,0
+DA:63,0
+DA:65,0
+DA:66,0
+DA:67,0
+DA:69,0
+DA:72,0
+DA:73,0
+DA:74,0
+DA:76,0
+DA:79,0
+DA:80,0
+DA:82,0
+DA:83,0
+DA:84,0
+DA:86,0
+DA:87,0
+BRDA:60,35,0,0
+BRDA:60,35,1,0
+BRDA:60,59,0,0
+BRDA:60,59,1,0
+BRDA:65,232,0,0
+BRDA:65,232,1,0
+BRDA:72,284,0,0
+BRDA:72,284,1,0
+BRDA:82,517,0,0
+BRDA:82,517,1,0
+BRDA:82,536,0,0
+BRDA:82,536,1,0
+LF:48
+LH:0
+BRF:16
+BRH:0
+FNF:5
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Helpers\ExtensionListDisplayHelper.cs
+FN:17,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper::DisplayExtensions(System.Collections.Generic.List`1<VsExtensionsTool.Models.ExtensionInfo>)
+FNDA:0,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper::DisplayExtensions(System.Collections.Generic.List`1<VsExtensionsTool.Models.ExtensionInfo>)
+DA:18,0
+DA:19,0
+DA:20,0
+DA:21,0
+DA:22,0
+DA:23,0
+DA:25,0
+DA:27,0
+DA:28,0
+DA:30,0
+DA:32,0
+DA:33,0
+DA:34,0
+DA:36,0
+DA:37,0
+DA:38,0
+DA:39,0
+DA:40,0
+DA:41,0
+DA:43,0
+DA:44,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+DA:52,0
+DA:53,0
+DA:54,0
+DA:55,0
+DA:56,0
+DA:57,0
+DA:58,0
+DA:60,0
+DA:61,0
+DA:62,0
+DA:63,0
+DA:65,0
+DA:66,0
+DA:68,0
+DA:69,0
+DA:71,0
+DA:72,0
+BRDA:27,110,0,0
+BRDA:27,110,1,0
+BRDA:32,541,1,0
+BRDA:36,159,0,0
+BRDA:38,169,0,0
+BRDA:38,169,1,0
+BRDA:36,159,1,0
+BRDA:43,228,0,0
+BRDA:43,228,1,0
+BRDA:43,305,0,0
+BRDA:43,305,1,0
+BRDA:43,362,0,0
+BRDA:43,362,1,0
+BRDA:43,419,0,0
+BRDA:43,419,1,0
+BRDA:32,541,0,0
+BRDA:68,576,0,0
+BRDA:68,576,1,0
+FN:8,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper::.ctor(VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+FNDA:0,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper::.ctor(VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+DA:9,0
+FN:103,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper/<>c__DisplayClass4_0/<<PopulateExtensionsInfoFromMarketplaceAsync>b__0>d::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper/<>c__DisplayClass4_0/<<PopulateExtensionsInfoFromMarketplaceAsync>b__0>d::MoveNext()
+DA:104,0
+DA:105,0
+DA:107,0
+DA:108,0
+DA:109,0
+DA:110,0
+DA:111,0
+DA:112,0
+DA:113,0
+DA:114,0
+DA:115,0
+DA:116,0
+DA:118,0
+DA:119,0
+DA:120,0
+FN:84,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper/<PopulateExtensionsInfoFromMarketplaceAsync>d__4::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Helpers.ExtensionListDisplayHelper/<PopulateExtensionsInfoFromMarketplaceAsync>d__4::MoveNext()
+DA:85,0
+DA:86,0
+DA:87,0
+DA:89,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:93,0
+DA:94,0
+DA:95,0
+DA:96,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+DA:101,0
+DA:102,0
+DA:103,0
+DA:106,0
+DA:117,0
+DA:121,0
+LF:82
+LH:0
+BRF:18
+BRH:0
+FNF:4
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Helpers\MarketplaceHelper.cs
+FN:7,System.Void VsExtensionsTool.Helpers.MarketplaceHelper::.ctor(Spectre.Console.IAnsiConsole)
+FNDA:0,System.Void VsExtensionsTool.Helpers.MarketplaceHelper::.ctor(Spectre.Console.IAnsiConsole)
+DA:8,0
+FN:103,System.Void VsExtensionsTool.Helpers.MarketplaceHelper::.cctor()
+FNDA:0,System.Void VsExtensionsTool.Helpers.MarketplaceHelper::.cctor()
+DA:104,0
+DA:106,0
+DA:107,0
+DA:108,0
+DA:109,0
+DA:110,0
+DA:111,0
+FN:114,System.Boolean VsExtensionsTool.Helpers.MarketplaceHelper/<>c::<GetResponseStringAsync>b__10_0(System.String)
+FNDA:0,System.Boolean VsExtensionsTool.Helpers.MarketplaceHelper/<>c::<GetResponseStringAsync>b__10_0(System.String)
+DA:115,0
+FN:113,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<GetResponseStringAsync>d__10::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<GetResponseStringAsync>d__10::MoveNext()
+DA:114,0
+DA:116,0
+DA:118,0
+DA:119,0
+DA:120,0
+DA:122,0
+DA:123,0
+BRDA:115,118,0,0
+BRDA:115,118,1,0
+BRDA:122,728,0,0
+BRDA:122,728,1,0
+BRDA:122,952,0,0
+BRDA:122,952,1,0
+FN:46,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<PopulateExtensionInfoFromMarketplaceAsync>d__7::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<PopulateExtensionInfoFromMarketplaceAsync>d__7::MoveNext()
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:51,0
+DA:54,0
+DA:57,0
+DA:58,0
+DA:60,0
+DA:61,0
+DA:62,0
+DA:63,0
+DA:64,0
+DA:65,0
+DA:66,0
+DA:67,0
+DA:68,0
+DA:69,0
+DA:70,0
+DA:71,0
+DA:72,0
+DA:73,0
+DA:74,0
+DA:75,0
+DA:76,0
+DA:77,0
+DA:78,0
+DA:79,0
+DA:80,0
+DA:81,0
+DA:83,0
+DA:84,0
+DA:87,0
+DA:88,0
+DA:90,0
+DA:91,0
+DA:92,0
+DA:94,0
+DA:95,0
+DA:96,0
+DA:97,0
+DA:98,0
+DA:99,0
+DA:100,0
+DA:101,0
+DA:102,0
+BRDA:60,248,0,0
+BRDA:60,248,1,0
+BRDA:60,261,0,0
+BRDA:60,261,1,0
+BRDA:90,564,0,0
+BRDA:94,778,0,0
+BRDA:94,778,1,0
+BRDA:90,564,1,0
+FN:125,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<TryExtractVersionAndVsixUrlAsync>d__11::MoveNext()
+FNDA:0,System.Void VsExtensionsTool.Helpers.MarketplaceHelper/<TryExtractVersionAndVsixUrlAsync>d__11::MoveNext()
+DA:126,0
+DA:127,0
+DA:129,0
+DA:130,0
+DA:131,0
+DA:133,0
+DA:134,0
+DA:136,0
+DA:138,0
+DA:139,0
+DA:141,0
+DA:143,0
+DA:144,0
+DA:146,0
+DA:147,0
+DA:149,0
+DA:150,0
+DA:152,0
+DA:153,0
+DA:154,0
+DA:155,0
+DA:156,0
+DA:158,0
+DA:160,0
+DA:163,0
+DA:164,0
+BRDA:133,240,0,0
+BRDA:133,240,1,0
+BRDA:138,305,0,0
+BRDA:138,305,1,0
+BRDA:143,370,0,0
+BRDA:143,370,1,0
+BRDA:149,472,0,0
+BRDA:149,472,1,0
+BRDA:152,644,1,0
+BRDA:154,566,0,0
+BRDA:154,566,1,0
+BRDA:154,596,1,0
+BRDA:154,596,0,0
+BRDA:152,644,0,0
+LF:88
+LH:0
+BRF:28
+BRH:0
+FNF:6
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Helpers\VisualStudioDisplayHelper.cs
+FN:27,System.Void VsExtensionsTool.Helpers.VisualStudioDisplayHelper::PrintInstallationsTable(System.Collections.Generic.IReadOnlyList`1<VsExtensionsTool.Models.VisualStudioInstance>,System.Boolean)
+FNDA:0,System.Void VsExtensionsTool.Helpers.VisualStudioDisplayHelper::PrintInstallationsTable(System.Collections.Generic.IReadOnlyList`1<VsExtensionsTool.Models.VisualStudioInstance>,System.Boolean)
+DA:28,0
+DA:29,0
+DA:30,0
+DA:31,0
+DA:32,0
+DA:35,0
+DA:36,0
+DA:38,0
+DA:39,0
+DA:40,0
+DA:41,0
+DA:42,0
+DA:44,0
+DA:45,0
+DA:46,0
+DA:47,0
+DA:48,0
+DA:49,0
+DA:50,0
+DA:52,0
+DA:53,0
+BRDA:29,2,0,0
+BRDA:29,2,1,0
+BRDA:29,18,0,0
+BRDA:29,18,1,0
+BRDA:35,46,0,0
+BRDA:35,46,1,0
+BRDA:44,277,1,0
+BRDA:46,135,0,0
+BRDA:46,135,1,0
+BRDA:47,158,0,0
+BRDA:47,158,1,0
+BRDA:48,181,0,0
+BRDA:48,181,1,0
+BRDA:48,198,0,0
+BRDA:48,198,1,0
+BRDA:44,277,0,0
+FN:7,System.Void VsExtensionsTool.Helpers.VisualStudioDisplayHelper::.ctor(Spectre.Console.IAnsiConsole)
+FNDA:0,System.Void VsExtensionsTool.Helpers.VisualStudioDisplayHelper::.ctor(Spectre.Console.IAnsiConsole)
+DA:8,0
+LF:22
+LH:0
+BRF:16
+BRH:0
+FNF:2
+FNH:0
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Commands\ListCommand.cs
+FN:26,System.Void VsExtensionsTool.Commands.ListCommand::.ctor(VsExtensionsTool.Helpers.IExtensionListDisplayHelper,VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+FNDA:3,System.Void VsExtensionsTool.Commands.ListCommand::.ctor(VsExtensionsTool.Helpers.IExtensionListDisplayHelper,VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+DA:27,3
+DA:28,3
+DA:29,3
+DA:30,3
+DA:31,3
+DA:32,3
+DA:33,3
+DA:35,3
+DA:36,3
+DA:37,3
+DA:38,3
+DA:39,3
+DA:41,3
+DA:42,3
+DA:43,3
+DA:44,3
+DA:45,3
+DA:47,3
+DA:48,3
+DA:49,3
+DA:50,3
+DA:51,3
+DA:52,3
+DA:53,3
+DA:55,3
+DA:56,3
+DA:57,3
+DA:58,3
+DA:59,3
+DA:60,3
+DA:61,3
+DA:62,3
+FN:89,System.Boolean VsExtensionsTool.Commands.ListCommand/<>c::<HandleAsync>b__5_0(VsExtensionsTool.Models.ExtensionInfo)
+FNDA:0,System.Boolean VsExtensionsTool.Commands.ListCommand/<>c::<HandleAsync>b__5_0(VsExtensionsTool.Models.ExtensionInfo)
+DA:90,0
+FN:64,System.Void VsExtensionsTool.Commands.ListCommand/<HandleAsync>d__5::MoveNext()
+FNDA:3,System.Void VsExtensionsTool.Commands.ListCommand/<HandleAsync>d__5::MoveNext()
+DA:65,3
+DA:66,3
+DA:68,3
+DA:69,1
+DA:70,1
+DA:72,1
+DA:75,2
+DA:77,2
+DA:78,0
+DA:80,2
+DA:81,1
+DA:82,1
+DA:84,1
+DA:87,1
+DA:88,1
+DA:89,1
+DA:91,1
+DA:92,1
+DA:93,3
+BRDA:68,179,0,1
+BRDA:68,179,1,2
+BRDA:77,260,0,0
+BRDA:77,260,1,2
+BRDA:80,414,0,1
+BRDA:80,414,1,1
+BRDA:87,458,0,1
+BRDA:87,458,1,0
+LF:52
+LH:50
+BRF:8
+BRH:6
+FNF:3
+FNH:2
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Commands\ListVsCommand.cs
+FN:19,System.Void VsExtensionsTool.Commands.ListVsCommand::.ctor(VsExtensionsTool.Helpers.IVisualStudioDisplayHelper,VsExtensionsTool.Managers.IVisualStudioManager)
+FNDA:3,System.Void VsExtensionsTool.Commands.ListVsCommand::.ctor(VsExtensionsTool.Helpers.IVisualStudioDisplayHelper,VsExtensionsTool.Managers.IVisualStudioManager)
+DA:20,3
+DA:21,3
+DA:22,3
+DA:23,3
+DA:24,3
+DA:25,3
+FN:27,System.Void VsExtensionsTool.Commands.ListVsCommand/<HandleAsync>d__3::MoveNext()
+FNDA:3,System.Void VsExtensionsTool.Commands.ListVsCommand/<HandleAsync>d__3::MoveNext()
+DA:28,3
+DA:29,3
+DA:30,3
+DA:31,3
+LF:10
+LH:10
+BRF:0
+BRH:0
+FNF:2
+FNH:2
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Commands\RemoveCommand.cs
+FN:23,System.Void VsExtensionsTool.Commands.RemoveCommand::.ctor(VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+FNDA:5,System.Void VsExtensionsTool.Commands.RemoveCommand::.ctor(VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+DA:24,5
+DA:25,5
+DA:26,5
+DA:27,5
+DA:28,5
+DA:30,5
+DA:31,5
+DA:32,5
+DA:33,5
+DA:34,5
+DA:36,5
+DA:37,5
+DA:38,5
+DA:39,5
+DA:40,5
+DA:42,5
+DA:43,5
+DA:45,5
+DA:46,5
+DA:47,5
+DA:48,5
+DA:49,5
+DA:50,5
+DA:51,5
+FN:88,System.ValueTuple`2<System.String,System.String> VsExtensionsTool.Commands.RemoveCommand/<>c::<HandleAsync>b__4_1(VsExtensionsTool.Models.ExtensionInfo)
+FNDA:4,System.ValueTuple`2<System.String,System.String> VsExtensionsTool.Commands.RemoveCommand/<>c::<HandleAsync>b__4_1(VsExtensionsTool.Models.ExtensionInfo)
+DA:89,4
+FN:89,System.String VsExtensionsTool.Commands.RemoveCommand/<>c::<HandleAsync>b__4_2(System.ValueTuple`2<System.String,System.String>)
+FNDA:9,System.String VsExtensionsTool.Commands.RemoveCommand/<>c::<HandleAsync>b__4_2(System.ValueTuple`2<System.String,System.String>)
+DA:90,9
+FN:103,System.Void VsExtensionsTool.Commands.RemoveCommand/<>c__DisplayClass4_0::<HandleAsync>b__0(Spectre.Console.StatusContext)
+FNDA:1,System.Void VsExtensionsTool.Commands.RemoveCommand/<>c__DisplayClass4_0::<HandleAsync>b__0(Spectre.Console.StatusContext)
+DA:104,1
+DA:105,1
+DA:106,1
+DA:108,7
+DA:109,2
+DA:110,2
+DA:111,2
+DA:112,2
+DA:113,1
+BRDA:108,124,1,2
+BRDA:108,124,0,1
+FN:54,System.Void VsExtensionsTool.Commands.RemoveCommand/<HandleAsync>d__4::MoveNext()
+FNDA:5,System.Void VsExtensionsTool.Commands.RemoveCommand/<HandleAsync>d__4::MoveNext()
+DA:55,5
+DA:56,5
+DA:58,5
+DA:59,1
+DA:60,1
+DA:62,1
+DA:65,4
+DA:66,1
+DA:67,1
+DA:69,1
+DA:72,3
+DA:74,3
+DA:75,1
+DA:76,1
+DA:78,1
+DA:81,2
+DA:82,2
+DA:83,2
+DA:84,2
+DA:85,2
+DA:86,2
+DA:87,2
+DA:88,2
+DA:91,2
+DA:93,2
+DA:94,1
+DA:95,1
+DA:97,1
+DA:100,1
+DA:101,1
+DA:102,1
+DA:103,1
+DA:107,1
+DA:114,1
+DA:115,5
+BRDA:58,217,0,1
+BRDA:58,217,1,4
+BRDA:65,265,0,1
+BRDA:65,265,1,3
+BRDA:74,364,0,1
+BRDA:74,364,1,2
+BRDA:93,726,0,1
+BRDA:93,726,1,1
+LF:70
+LH:70
+BRF:10
+BRH:10
+FNF:5
+FNH:5
+end_of_record
+SF:D:\Projetos\VsExtensionsTool\VsExtensionsTool\Commands\UpdateCommand.cs
+FN:24,System.Void VsExtensionsTool.Commands.UpdateCommand::.ctor(VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Helpers.IExtensionListDisplayHelper,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+FNDA:4,System.Void VsExtensionsTool.Commands.UpdateCommand::.ctor(VsExtensionsTool.Managers.IVisualStudioManager,VsExtensionsTool.Helpers.IExtensionListDisplayHelper,VsExtensionsTool.Managers.IExtensionManager,Spectre.Console.IAnsiConsole)
+DA:25,4
+DA:26,4
+DA:27,4
+DA:28,4
+DA:29,4
+DA:30,4
+DA:32,4
+DA:33,4
+FN:49,System.Boolean VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_0(VsExtensionsTool.Models.ExtensionInfo)
+FNDA:5,System.Boolean VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_0(VsExtensionsTool.Models.ExtensionInfo)
+DA:50,5
+FN:66,System.ValueTuple`2<System.String,System.String> VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_2(VsExtensionsTool.Models.ExtensionInfo)
+FNDA:2,System.ValueTuple`2<System.String,System.String> VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_2(VsExtensionsTool.Models.ExtensionInfo)
+DA:67,2
+FN:67,System.String VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_3(System.ValueTuple`2<System.String,System.String>)
+FNDA:6,System.String VsExtensionsTool.Commands.UpdateCommand/<>c::<HandleAsync>b__5_3(System.ValueTuple`2<System.String,System.String>)
+DA:68,6
+FN:81,System.Void VsExtensionsTool.Commands.UpdateCommand/<>c__DisplayClass5_0/<<HandleAsync>b__1>d::MoveNext()
+FNDA:1,System.Void VsExtensionsTool.Commands.UpdateCommand/<>c__DisplayClass5_0/<<HandleAsync>b__1>d::MoveNext()
+DA:82,1
+DA:83,1
+DA:84,1
+DA:86,5
+DA:87,1
+DA:88,2
+DA:89,1
+DA:90,1
+DA:91,1
+DA:92,1
+BRDA:86,372,1,1
+BRDA:86,372,0,1
+FN:100,System.Void VsExtensionsTool.Commands.UpdateCommand/<ApplyUpdateAsync>d__6::MoveNext()
+FNDA:1,System.Void VsExtensionsTool.Commands.UpdateCommand/<ApplyUpdateAsync>d__6::MoveNext()
+DA:101,1
+DA:102,1
+DA:103,1
+DA:104,1
+DA:106,1
+DA:107,1
+DA:108,1
+FN:35,System.Void VsExtensionsTool.Commands.UpdateCommand/<HandleAsync>d__5::MoveNext()
+FNDA:4,System.Void VsExtensionsTool.Commands.UpdateCommand/<HandleAsync>d__5::MoveNext()
+DA:36,4
+DA:37,4
+DA:39,4
+DA:40,1
+DA:41,1
+DA:43,1
+DA:46,3
+DA:47,3
+DA:48,3
+DA:52,3
+DA:53,1
+DA:54,1
+DA:56,1
+DA:59,2
+DA:60,2
+DA:61,2
+DA:62,2
+DA:63,2
+DA:64,2
+DA:65,2
+DA:66,2
+DA:69,2
+DA:71,2
+DA:72,1
+DA:73,1
+DA:75,1
+DA:78,1
+DA:79,1
+DA:80,1
+DA:81,1
+DA:85,1
+DA:93,1
+DA:94,4
+BRDA:39,240,0,1
+BRDA:39,240,1,3
+BRDA:52,543,0,1
+BRDA:52,543,1,2
+BRDA:71,910,0,1
+BRDA:71,910,1,1
+LF:61
+LH:61
+BRF:8
+BRH:8
+FNF:7
+FNH:7
+end_of_record
