@@ -1,8 +1,10 @@
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
+using VsExtensionsTool.Managers;
+using VsExtensionsTool.Models;
 
-namespace VsExtensionsTool;
+namespace VsExtensionsTool.Helpers;
 
 public static class MarketplaceHelper
 {

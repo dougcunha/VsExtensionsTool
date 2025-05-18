@@ -1,4 +1,6 @@
-namespace VsExtensionsTool;
+using VsExtensionsTool.Models;
+
+namespace VsExtensionsTool.Helpers;
 
 /// <summary>
 /// Métodos utilitários para exibição de instalações do Visual Studio.

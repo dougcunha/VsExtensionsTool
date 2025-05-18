@@ -1,4 +1,6 @@
 using System.CommandLine;
+using VsExtensionsTool.Managers;
+using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Commands;
 
