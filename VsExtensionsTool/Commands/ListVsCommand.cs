@@ -9,17 +9,24 @@ namespace VsExtensionsTool.Commands;
 /// </summary>
 public sealed class ListVsCommand : Command
 {
-    public ListVsCommand() : base("list_vs", "List all Visual Studio installations.")
+    private readonly IVisualStudioDisplayHelper _displayHelper;
+    private readonly IVisualStudioManager _vsManager;
+
+    public ListVsCommand
+    (
+        IVisualStudioDisplayHelper displayHelper,
+        IVisualStudioManager vsManager
+    )
+        : base("list_vs", "List all Visual Studio installations.")
     {
-        this.SetHandler
-        (
-            HandleAsync
-        );
-    }    
-        
+        _displayHelper = displayHelper;
+        _vsManager = vsManager;
+        this.SetHandler(HandleAsync);
+    }
+
     private async Task HandleAsync()
     {
-        var installations = await VisualStudioManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
-        VisualStudioDisplayHelper.PrintInstallationsTable(installations);
+        var installations = await _vsManager.GetVisualStudioInstallationsAsync().ConfigureAwait(false);
+        _displayHelper.PrintInstallationsTable(installations);
     }
 }

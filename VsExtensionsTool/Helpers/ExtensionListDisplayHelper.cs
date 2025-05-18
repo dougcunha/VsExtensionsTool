@@ -6,17 +6,15 @@ namespace VsExtensionsTool.Helpers;
 /// <summary>
 /// Responsible for displaying extension lists with support for progress and marketplace queries.
 /// </summary>
-public static class ExtensionListDisplayHelper
+public sealed class ExtensionListDisplayHelper(IExtensionManager extensionManager, IAnsiConsole console) : IExtensionListDisplayHelper
 {
+
     /// <summary>
     /// Displays a list of extensions, with optional support for marketplace version queries and progress bar.
     /// </summary>
     /// <param name="extensions">List of installed extensions.</param>
-    /// <returns>List of displayed extensions (filtered and, if requested, enriched with marketplace data).</returns>
-    public static void DisplayExtensions
-    (
-        List<ExtensionInfo> extensions
-    )
+    /// <param name="console">Console to use for output.</param>
+    public void DisplayExtensions(List<ExtensionInfo> extensions)
     {
         var table = new Table().Border(TableBorder.Rounded);
         table.AddColumn("#");
@@ -43,21 +41,21 @@ public static class ExtensionListDisplayHelper
             }
 
             var columns = new List<string?>
-             {
-                 ext.IsOutdated
-                     ? $"[yellow]{index}[/]"
-                     : index.ToString(),
-                 ext.IsOutdated
-                     ? $"[yellow]{Markup.Escape(ext.Name)}[/]"
-                     : Markup.Escape(ext.Name),
-                 ext.IsOutdated
-                     ? $"[yellow]{Markup.Escape(ext.Publisher)}[/]"
-                     : Markup.Escape(ext.Publisher),
-                 ext.IsOutdated
-                     ? $"[yellow]{Markup.Escape(ext.InstalledVersion)}[/]"
-                     : Markup.Escape(ext.InstalledVersion),
-                 marketplaceVersion
-             };
+            {
+                ext.IsOutdated
+                    ? $"[yellow]{index}[/]"
+                    : index.ToString(),
+                ext.IsOutdated
+                    ? $"[yellow]{Markup.Escape(ext.Name)}[/]"
+                    : Markup.Escape(ext.Name),
+                ext.IsOutdated
+                    ? $"[yellow]{Markup.Escape(ext.Publisher)}[/]"
+                    : Markup.Escape(ext.Publisher),
+                ext.IsOutdated
+                    ? $"[yellow]{Markup.Escape(ext.InstalledVersion)}[/]"
+                    : Markup.Escape(ext.InstalledVersion),
+                marketplaceVersion
+            };
 
             table.AddRow
             (
@@ -68,15 +66,25 @@ public static class ExtensionListDisplayHelper
         }
 
         if (extensions.Count == 0)
-            AnsiConsole.MarkupLine("[red]No extensions found.[/]");
+            console.MarkupLine("[red]No extensions found.[/]");
         else
-            AnsiConsole.Write(table);
+            console.Write(table);
     }
 
-    public static async Task PopulateExtensionsInfoFromMarketplaceAsync(List<ExtensionInfo> extensions, VisualStudioInstance instance)
+    /// <summary>
+    /// Populates extension info from the marketplace, showing progress.
+    /// </summary>
+    /// <param name="extensions">Extensions to update.</param>
+    /// <param name="instance">Visual Studio instance.</param>
+    /// <param name="console">Console to use for output.</param>
+    public async Task PopulateExtensionsInfoFromMarketplaceAsync
+    (
+        List<ExtensionInfo> extensions,
+        VisualStudioInstance instance
+    )
     {
-        AnsiConsole.MarkupLine("[bold]Fetching extensions versions...[/]");
-        var progress = AnsiConsole.Progress();
+        console.MarkupLine("[bold]Fetching extensions versions...[/]");
+        var progress = console.Progress();
 
         await progress
             .Columns
@@ -96,7 +104,7 @@ public static class ExtensionListDisplayHelper
             {
                 var progressTask = progressCtx.AddTask("Checking Marketplace...", maxValue: extensions.Count);
 
-                await ExtensionManager
+                await extensionManager
                     .PopulateExtensionInfoFromMarketplaceAsync
                     (
                         instance,

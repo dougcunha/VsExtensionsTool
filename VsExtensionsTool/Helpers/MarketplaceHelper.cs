@@ -1,12 +1,11 @@
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using VsExtensionsTool.Managers;
 using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Helpers;
 
-public static class MarketplaceHelper
+public class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
 {
     private const string MARKETPLACE_API_URL = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery";
     private const string MARKETPLACE_API_VERSION = "3.2-preview.1";
@@ -44,7 +43,7 @@ public static class MarketplaceHelper
     /// <param name="extension">The extension info.</param>
     /// <param name="vsInstance">The selected instance of Visual Studio.</param>
     /// <returns>The latest version string, or "Not found" if not available.</returns>
-    public static async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
+    public async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
     {
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Accept", "application/json;api-version=" + MARKETPLACE_API_VERSION);
@@ -98,7 +97,7 @@ public static class MarketplaceHelper
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Error occurred while fetching the latest version. {ex.Message.EscapeMarkup()}[/]");
+            console.MarkupLine($"[red]Error occurred while fetching the latest version. {ex.Message.EscapeMarkup()}[/]");
         }
     }
 
@@ -111,7 +110,7 @@ public static class MarketplaceHelper
         ["deflate"] = static res => new DeflateStream(res, CompressionMode.Decompress)
     };
 
-    private static async Task<string> GetResponseStringAsync(HttpResponseMessage response)
+    private async Task<string> GetResponseStringAsync(HttpResponseMessage response)
     {
         if (!response.Content.Headers.ContentEncoding.Any(static e => _encodings.Contains(e)))
             return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -123,7 +122,7 @@ public static class MarketplaceHelper
         return await reader.ReadToEndAsync().ConfigureAwait(false);
     }
 
-    private static async Task<(string? version, string? vsixUrl)> TryExtractVersionAndVsixUrlAsync(HttpResponseMessage response)
+    private async Task<(string? version, string? vsixUrl)> TryExtractVersionAndVsixUrlAsync(HttpResponseMessage response)
     {
         var responseString = await GetResponseStringAsync(response).ConfigureAwait(false);
 
