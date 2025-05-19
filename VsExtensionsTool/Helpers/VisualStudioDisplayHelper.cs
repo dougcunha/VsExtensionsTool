@@ -1,11 +1,7 @@
-using VsExtensionsTool.Models;
-
 namespace VsExtensionsTool.Helpers;
 
-/// <summary>
-/// Métodos utilitários para exibição de instalações do Visual Studio.
-/// </summary>
-public class VisualStudioDisplayHelper(IAnsiConsole console) : IVisualStudioDisplayHelper
+/// <inheritdoc/>
+public sealed class VisualStudioDisplayHelper(IAnsiConsole console) : IVisualStudioDisplayHelper
 {
     private const string NUMBER_HEADER = "#";
     private const string NAME_HEADER = "Name";
@@ -14,12 +10,7 @@ public class VisualStudioDisplayHelper(IAnsiConsole console) : IVisualStudioDisp
     private const string NO_INSTALLATION_FOUND = "No Visual Studio installations found.";
     private const string DETECTED_INSTALLATIONS = "Detected Visual Studio installations:";
 
-    /// <summary>
-    /// Exibe a lista de instalações do Visual Studio em formato de tabela.
-    /// </summary>
-    /// <param name="installations">Lista de instalações.</param>
-    /// <param name="console">Console a ser utilizado para saída.</param>
-    /// <param name="showHeader">Se verdadeiro, exibe o cabeçalho padrão.</param>
+    /// <inheritdoc/>
     public void PrintInstallationsTable
     (
         IReadOnlyList<VisualStudioInstance>? installations,
@@ -29,6 +20,7 @@ public class VisualStudioDisplayHelper(IAnsiConsole console) : IVisualStudioDisp
         if (installations == null || installations.Count == 0)
         {
             console.MarkupLine($"[red]{NO_INSTALLATION_FOUND}[/]");
+
             return;
         }
 

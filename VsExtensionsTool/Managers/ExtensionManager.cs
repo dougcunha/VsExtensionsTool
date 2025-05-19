@@ -1,13 +1,9 @@
 using System.IO.Abstractions;
 using System.Text.Json;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Managers;
 
-/// <summary>
-/// Provides methods to list, filter, and remove Visual Studio extensions for a given installation.
-/// </summary>
+/// <inheritdoc/>
 public sealed class ExtensionManager
 (
     IAnsiConsole console,
@@ -20,14 +16,7 @@ public sealed class ExtensionManager
     private const string EXTENSIONS_RELATIVE_PATH = "Extensions";
     private const string VSIX_MANIFEST = "extension.vsixmanifest";
 
-    /// <summary>
-    /// Gets all extensions installed for the specified Visual Studio installation.
-    /// </summary>
-    /// <param name="installationPath">The installation path of Visual Studio.</param>
-    /// <param name="filter">
-    /// An optional filter string to search for extensions by name or Id.
-    /// </param>
-    /// <returns>List of ExtensionInfo objects representing each extension.</returns>
+    /// <inheritdoc/>
     public List<ExtensionInfo> GetExtensions(VisualStudioInstance instance, string? filter = null)
     {
         var extensions = new List<ExtensionInfo>();
@@ -69,6 +58,7 @@ public sealed class ExtensionManager
         return [.. extensions.OrderBy(static e => e.Name, StringComparer.CurrentCultureIgnoreCase)];
     }
 
+    /// <inheritdoc/>
     public async Task PopulateExtensionInfoFromMarketplaceAsync
     (
         VisualStudioInstance instance,
@@ -78,19 +68,12 @@ public sealed class ExtensionManager
     {
         foreach (var ext in extensions)
         {
-            await mktHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, instance!);
+            await mktHelper.PopulateExtensionInfoFromMarketplaceAsync(ext, instance).ConfigureAwait(false);
             onPopulate(ext);
         }
     }
 
-    /// <summary>
-    /// Removes an extension by its Id for the specified Visual Studio installation.
-    /// </summary>
-    /// <param name="installationPath">The installation path of Visual Studio.</param>
-    /// <param name="id">The Id of the extension to remove.</param>
-    /// <param name="instanceId">
-    /// The instance ID of the Visual Studio installation.
-    /// </param>
+    /// <inheritdoc/>
     public async Task RemoveExtensionByIdAsync(VisualStudioInstance instance, string id)
     {
         const string VSIX_INSTALLER_RELATIVE_PATH = "Common7/IDE/VSIXInstaller.exe";
@@ -123,6 +106,15 @@ public sealed class ExtensionManager
         console.MarkupLineInterpolated($"Extension '{extension.Name}' removed (Id: {extension.Id}).");
     }
 
+    /// <summary>
+    /// Downloads the VSIX file from the marketplace using the provided URL.
+    /// </summary>
+    /// <param name="selectedExt">
+    /// The extension information containing the URL to download the VSIX file.
+    /// </param>
+    /// <returns>
+    /// The path to the downloaded VSIX file.
+    /// </returns>
     private async Task<string> DownloadVsixFromMarketplaceAsync(ExtensionInfo selectedExt)
     {
         var tempVsixPath = Path.Combine(Path.GetTempPath(), $"{selectedExt.Id}_{Guid.NewGuid()}.vsix");
@@ -134,18 +126,7 @@ public sealed class ExtensionManager
         return tempVsixPath;
     }
 
-    /// <summary>
-    /// Updates an extension by its path for the specified Visual Studio installation.
-    /// </summary>
-    /// <param name="selectedExt">
-    /// The selected extension to update.
-    /// </param>
-    /// <param name="instance">
-    /// The Visual Studio instance to update the extension for.
-    /// </param>
-    /// <returns>
-    /// The output of the VSIXInstaller process.
-    /// </returns>
+    /// <inheritdoc/>
     public async Task<string> UpdateExtensionAsync(ExtensionInfo selectedExt, VisualStudioInstance instance)
     {
         var vsixPath = await DownloadVsixFromMarketplaceAsync(selectedExt).ConfigureAwait(false);
@@ -193,7 +174,7 @@ public sealed class ExtensionManager
         var paths = new List<string>();
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        if (instance?.InstallationVersion is not null && instance?.InstanceId is not null)
+        if (instance is { InstallationVersion: not null, InstanceId: not null })
         {
             var mainVersion = GetMainVersion(instance.InstallationVersion); // e.g. 17.0
             var userPath = Path.Combine(localAppData, "Microsoft", "VisualStudio", $"{mainVersion}_{instance.InstanceId}", EXTENSIONS_RELATIVE_PATH);
@@ -254,6 +235,16 @@ public sealed class ExtensionManager
         }
     }
 
+    /// <summary>
+    /// Populates the specified <see cref="ExtensionInfo"/> object with data from a manifest.json file.
+    /// </summary>
+    /// <remarks>This method attempts to locate and read a manifest.json file in the same directory as the
+    /// specified manifest path. If the file exists, it parses the JSON content and extracts the "vsixId" property to
+    /// populate the <paramref name="extension"/> object. If the file does not exist, the method returns without making
+    /// any changes. If an error occurs during file reading or JSON parsing, an error message is logged to the
+    /// console.</remarks>
+    /// <param name="manifestPath">The file path to the manifest file directory.</param>
+    /// <param name="extension">The <see cref="ExtensionInfo"/> object to populate with data from the manifest.</param>
     private void PopulateFromManifestJson(string manifestPath, ExtensionInfo extension)
     {
         var jsonManifest = Path.GetDirectoryName(manifestPath) + Path.DirectorySeparatorChar + "manifest.json";

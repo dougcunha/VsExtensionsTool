@@ -1,10 +1,6 @@
-﻿using System.CommandLine;
-using System.Diagnostics;
-using VsExtensionsTool.Commands;
-using VsExtensionsTool.Managers;
+﻿using VsExtensionsTool.Commands;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using VsExtensionsTool.Helpers;
 using System.IO.Abstractions;
 
 var builder = Host.CreateApplicationBuilder(args);
@@ -25,7 +21,7 @@ services.AddTransient<UpdateCommand>();
 services.AddTransient<IXDocumentLoader, XDocumentLoader>();
 
 using var host = builder.Build();
-await host.StartAsync();
+await host.StartAsync().ConfigureAwait(false);
 
 var rootCommand = new RootCommand("VsExtensionsTool - Visual Studio Extensions Manager");
 
@@ -34,7 +30,7 @@ rootCommand.AddCommand(host.Services.GetRequiredService<ListVsCommand>());
 rootCommand.AddCommand(host.Services.GetRequiredService<RemoveCommand>());
 rootCommand.AddCommand(host.Services.GetRequiredService<UpdateCommand>());
 
-await rootCommand.InvokeAsync(args);
+await rootCommand.InvokeAsync(args).ConfigureAwait(false);
 
 if (Debugger.IsAttached)
 {

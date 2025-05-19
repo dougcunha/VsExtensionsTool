@@ -1,12 +1,8 @@
 using System.Text.Json;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Managers;
 
-/// <summary>
-/// Provides methods to detect and retrieve Visual Studio installations using vswhere.
-/// </summary>
+/// <inheritdoc/>
 public sealed class VisualStudioManager
 (
     IAnsiConsole console,
@@ -17,15 +13,10 @@ public sealed class VisualStudioManager
     private const string VSWHERE_PATH = @"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe";
     private const string VSWHERE_ARGS = "-all -prerelease -format json";
 
-    /// <summary>
-    /// Gets or sets the selected Visual Studio instance.
-    /// </summary>
+    /// <inheritdoc/>
     public VisualStudioInstance? VisualStudio { get; set; }
 
-    /// <summary>
-    /// Gets all Visual Studio installations on the system, including Preview versions.
-    /// </summary>
-    /// <returns>List of VisualStudioInstance objects representing each installation.</returns>
+    /// <inheritdoc/>
     public async Task<List<VisualStudioInstance>> GetVisualStudioInstallationsAsync()
     {
         var output = string.Empty;
@@ -37,7 +28,7 @@ public sealed class VisualStudioManager
             {
                 var vswherePath = Environment.ExpandEnvironmentVariables(VSWHERE_PATH);
 
-                output = await processRunner.RunAsync(vswherePath, VSWHERE_ARGS).ConfigureAwait(false);                
+                output = await processRunner.RunAsync(vswherePath, VSWHERE_ARGS).ConfigureAwait(false);
             }).ConfigureAwait(false);
 
         return string.IsNullOrWhiteSpace(output)

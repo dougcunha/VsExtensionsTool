@@ -60,8 +60,8 @@ public sealed class ListVsCommandTests
         await root.InvokeAsync("list_vs");
 
         // Assert
-        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x.Count == 1));
-        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x[0] == installations[0]));;
+        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(static x => x.Count == 1));
+        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x[0] == installations[0]));
     }
 
     [Fact]
@@ -96,6 +96,6 @@ public sealed class ListVsCommandTests
         // Assert
         _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x.Count == 2));
         _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x[0] == installations[0]));
-        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x[1] == installations[1]));        
+        _vsDisplayHelper.Received(1).PrintInstallationsTable(Arg.Is<List<VisualStudioInstance>>(x => x[1] == installations[1]));
     }
 }

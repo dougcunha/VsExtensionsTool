@@ -1,7 +1,3 @@
-using System.CommandLine;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-
 namespace VsExtensionsTool.Commands;
 
 /// <summary>

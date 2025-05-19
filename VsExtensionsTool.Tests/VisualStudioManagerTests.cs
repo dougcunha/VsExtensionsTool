@@ -106,7 +106,7 @@ public sealed class VisualStudioManagerTests
 
         // Assert
         result.ShouldNotBeNull();
-        result!.DisplayName.ShouldBe("VS2022");
+        result.DisplayName.ShouldBe("VS2022");
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public sealed class VisualStudioManagerTests
 
         // Assert
         result.ShouldNotBeNull();
-        result!.DisplayName.ShouldBe("VS2019");
+        result.DisplayName.ShouldBe("VS2019");
     }
 
     [Fact]
