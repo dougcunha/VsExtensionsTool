@@ -45,4 +45,8 @@ public sealed class ExtensionInfo
     /// </summary>
     public bool IsOutdated
         => !string.Equals(InstalledVersion, LatestVersion, StringComparison.OrdinalIgnoreCase) && LatestVersion != "Not found";
+    public IEnumerator<ExtensionInfo> GetEnumerator()
+    {
+        yield break;
+    }
 }
