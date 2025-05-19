@@ -1,7 +1,5 @@
 namespace VsExtensionsTool.Managers;
 
-using VsExtensionsTool.Models;
-
 /// <summary>
 /// This interface is responsible for managing Visual Studio installations.
 /// </summary>

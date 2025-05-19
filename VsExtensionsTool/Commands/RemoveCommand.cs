@@ -1,8 +1,3 @@
-using System.CommandLine;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
@@ -20,7 +15,7 @@ public sealed class RemoveCommand : Command
         IVisualStudioManager vsManager,
         IExtensionManager extensionManager,
         IAnsiConsole console
-    ) 
+    )
         : base("rm", "Remove an extension by its id.")
     {
         _vsManager = vsManager;
@@ -50,9 +45,8 @@ public sealed class RemoveCommand : Command
         );
     }
 
-    
     private async Task HandleAsync(string? id, string? filter)
-    {        
+    {
         var vsInstance = await _vsManager.SelectVisualStudioInstanceAsync().ConfigureAwait(false);
 
         if (vsInstance is null)

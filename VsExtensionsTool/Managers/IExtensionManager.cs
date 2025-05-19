@@ -1,5 +1,3 @@
-using VsExtensionsTool.Models;
-
 namespace VsExtensionsTool.Managers;
 
 /// <summary>

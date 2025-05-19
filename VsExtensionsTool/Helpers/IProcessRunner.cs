@@ -1,3 +1,5 @@
+namespace VsExtensionsTool.Helpers;
+
 /// <summary>
 /// Abstraction for running external processes, to facilitate unit testing.
 /// </summary>

@@ -1,8 +1,3 @@
-using System.CommandLine;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
@@ -90,7 +85,7 @@ public sealed class UpdateCommand : Command
                     await ApplyUpdateAsync(vsInstance, info).ConfigureAwait(false);
                 }
             }
-        );
+        ).ConfigureAwait(false);
     }
 
     private async Task ApplyUpdateAsync

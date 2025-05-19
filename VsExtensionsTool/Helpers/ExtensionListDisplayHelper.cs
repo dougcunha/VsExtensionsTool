@@ -1,19 +1,9 @@
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-
 namespace VsExtensionsTool.Helpers;
 
-/// <summary>
-/// Responsible for displaying extension lists with support for progress and marketplace queries.
-/// </summary>
+/// <inheritdoc/>
 public sealed class ExtensionListDisplayHelper(IExtensionManager extensionManager, IAnsiConsole console) : IExtensionListDisplayHelper
 {
-
-    /// <summary>
-    /// Displays a list of extensions, with optional support for marketplace version queries and progress bar.
-    /// </summary>
-    /// <param name="extensions">List of installed extensions.</param>
-    /// <param name="console">Console to use for output.</param>
+    /// <inheritdoc/>
     public void DisplayExtensions(List<ExtensionInfo> extensions)
     {
         var table = new Table().Border(TableBorder.Rounded);
@@ -71,13 +61,8 @@ public sealed class ExtensionListDisplayHelper(IExtensionManager extensionManage
             console.Write(table);
     }
 
-    /// <summary>
-    /// Populates extension info from the marketplace, showing progress.
-    /// </summary>
-    /// <param name="extensions">Extensions to update.</param>
-    /// <param name="instance">Visual Studio instance.</param>
-    /// <param name="console">Console to use for output.</param>
-    public async Task PopulateExtensionsInfoFromMarketplaceAsync
+    /// <inheritdoc/>
+    public Task PopulateExtensionsInfoFromMarketplaceAsync
     (
         List<ExtensionInfo> extensions,
         VisualStudioInstance instance
@@ -86,7 +71,7 @@ public sealed class ExtensionListDisplayHelper(IExtensionManager extensionManage
         console.MarkupLine("[bold]Fetching extensions versions...[/]");
         var progress = console.Progress();
 
-        await progress
+        return progress
             .Columns
             (
                 new ProgressBarColumn
@@ -105,18 +90,19 @@ public sealed class ExtensionListDisplayHelper(IExtensionManager extensionManage
                 var progressTask = progressCtx.AddTask("Checking Marketplace...", maxValue: extensions.Count);
 
                 await extensionManager
-                    .PopulateExtensionInfoFromMarketplaceAsync
-                    (
-                        instance,
-                        extensions,
-                        ext =>
-                        {
-                            progressTask.Description = $"Checking {ext.Name}...";
-                            progressTask.Increment(1);
-                        }).ConfigureAwait(false);
+                .PopulateExtensionInfoFromMarketplaceAsync
+                (
+                    instance,
+                    extensions,
+                    ext =>
+                    {
+                        progressTask.Description = $"Checking {ext.Name}...";
+                        progressTask.Increment(1);
+                    }).ConfigureAwait(false);
 
                 progressTask.Description = "Done";
                 progressTask.StopTask();
-            }).ConfigureAwait(false);
+            }
+        );
     }
 }

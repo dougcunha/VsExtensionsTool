@@ -1,7 +1,3 @@
-using System.CommandLine;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-
 namespace VsExtensionsTool.Commands;
 
 /// <summary>
@@ -88,7 +84,7 @@ public sealed class ListCommand : Command
         (
             outdated
                 ? [.. extensions.Where(static ext => ext.IsOutdated)]
-                : extensions            
+                : extensions
         );
     }
 }
