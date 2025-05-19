@@ -215,7 +215,11 @@ public sealed class ExtensionManager
             var metadata = doc.Descendants(ns + "Metadata").FirstOrDefault();
 
             if (metadata == null)
+            {
+                console.MarkupLineInterpolated($"[red]Error: Metadata not found in the manifest file » {manifestPath}.[/]");
+
                 return null;
+            }
 
             var identity = metadata.Element(ns + "Identity");
             var id = identity?.Attribute("Id")?.Value ?? "";

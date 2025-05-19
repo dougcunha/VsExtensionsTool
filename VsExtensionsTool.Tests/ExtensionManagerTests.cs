@@ -13,6 +13,8 @@ using WireMock.ResponseBuilders;
 
 namespace VsExtensionsTool.Tests;
 
+using NSubstitute.ExceptionExtensions;
+
 /// <summary>
 /// Unit tests for ExtensionManager.
 /// </summary>
@@ -88,10 +90,10 @@ public sealed class ExtensionManagerTests
             InstallationVersion = "17.0"
         };
 
-        var extDir = "C:/VS/dir1";
-        var manifestPath = Path.Combine(extDir, "extension.vsixmanifest");
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
         _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([extDir]);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
         _fileSystem.File.Exists(manifestPath).Returns(true);
         _xDocumentLoader.Load(manifestPath).Returns(_packageManifest);
 
@@ -99,7 +101,86 @@ public sealed class ExtensionManagerTests
         var result = _manager.GetExtensions(instance);
 
         // Assert
-        result.Count.ShouldBe(2); 
+        result.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void GetExtensions_WithManifestAndErrorReadinManifest_PrintsError()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc",
+            ChannelId = "Preview",
+            InstallationVersion = "17.0"
+        };
+
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
+        _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
+        _fileSystem.File.Exists(manifestPath).Returns(true);
+        _xDocumentLoader.Load(manifestPath).Throws(new IOException("Error reading manifest"));
+
+        // Act
+        var result = _manager.GetExtensions(instance);
+
+        // Assert
+        result.Count.ShouldBe(0);
+        _console.Output.ShouldContain("Error reading manifest");
+    }
+
+    [Fact]
+    public void GetExtensions_WithManifestWithNoMetadata_DoNotAddExtension()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc",
+            ChannelId = "Preview",
+            InstallationVersion = "17.0"
+        };
+
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
+        _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
+        _fileSystem.File.Exists(manifestPath).Returns(true);
+        _xDocumentLoader.Load(manifestPath).Returns(XDocument.Load("Xml\\PackkageManifestNoMetadata.xml"));
+
+        // Act
+        var result = _manager.GetExtensions(instance);
+
+        // Assert
+        result.Count.ShouldBe(0);
+        _console.Output.ShouldContain("Metadata not found");
+    }
+
+    [Fact]
+    public void GetExtensions_WithNoManifest_DoNotAddExtension()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc",
+            ChannelId = "Preview",
+            InstallationVersion = "17.0"
+        };
+
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
+        _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
+        _fileSystem.File.Exists(manifestPath).Returns(false);
+
+        // Act
+        var result = _manager.GetExtensions(instance);
+
+        // Assert
+        result.Count.ShouldBe(0);
     }
 
     [Fact]
@@ -114,10 +195,10 @@ public sealed class ExtensionManagerTests
             InstallationVersion = "17.0"
         };
 
-        var extDir = "C:/VS/dir1";
-        var manifestPath = Path.Combine(extDir, "extension.vsixmanifest");
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
         _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([extDir]);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
         _fileSystem.File.Exists(manifestPath).Returns(true);
         _xDocumentLoader.Load(manifestPath).Returns(_packageManifest);
 
@@ -125,7 +206,67 @@ public sealed class ExtensionManagerTests
         var result = _manager.GetExtensions(instance, "2022");
 
         // Assert
-        result.Count.ShouldBe(2); 
+        result.Count.ShouldBe(2);
+    }
+
+    [Fact]
+    public void GetExtensions_WithJsonManifest_ReadJsonManifest()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc",
+            ChannelId = "Preview",
+            InstallationVersion = "17.0"
+        };
+
+        const string EXT_DIR = @"C:\VS\dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
+        var jsonManifestPath = Path.Combine(EXT_DIR, "manifest.json");
+        _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
+        _fileSystem.File.Exists(manifestPath).Returns(true);
+        _fileSystem.File.Exists(jsonManifestPath).Returns(true);
+        _fileSystem.File.ReadAllText(jsonManifestPath).Returns(File.ReadAllText("Json\\JsonManifest.json"));
+        _xDocumentLoader.Load(manifestPath).Returns(_packageManifest);
+
+        // Act
+        var result = _manager.GetExtensions(instance, null);
+
+        // Assert
+        result.Count.ShouldBe(2);
+        result[0].VsixId.ShouldBe("CodeBlockEndTag.KhaosCoders.5743e483-e347-4815-8c9d-7fc46ca75382");
+    }
+
+    [Fact]
+    public void GetExtensions_WithJsonManifestAndErrorReadingJsonManifest_PrintsError()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc",
+            ChannelId = "Preview",
+            InstallationVersion = "17.0"
+        };
+
+        const string EXT_DIR = @"C:\VS\dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
+        var jsonManifestPath = Path.Combine(EXT_DIR, "manifest.json");
+        _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
+        _fileSystem.File.Exists(manifestPath).Returns(true);
+        _fileSystem.File.Exists(jsonManifestPath).Returns(true);
+        _fileSystem.File.ReadAllText(jsonManifestPath).Throws(new IOException("Error reading JSON manifest"));
+        _xDocumentLoader.Load(manifestPath).Returns(_packageManifest);
+
+        // Act
+        var result = _manager.GetExtensions(instance, null);
+
+        // Assert
+        result.Count.ShouldBe(2);
+        _console.Output.ShouldContain("Error reading JSON manifest");
     }
 
     [Fact]
@@ -133,10 +274,10 @@ public sealed class ExtensionManagerTests
     {
         // Arrange
         var instance = new VisualStudioInstance { InstallationPath = "C:/VS", InstanceId = "abc" };
-        var extDir = "C:/VS/dir1";
-        var manifestPath = Path.Combine(extDir, "extension.vsixmanifest");
+        const string EXT_DIR = "C:/VS/dir1";
+        var manifestPath = Path.Combine(EXT_DIR, "extension.vsixmanifest");
         _fileSystem.Directory.Exists(Arg.Any<string>()).Returns(true);
-        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([extDir]);
+        _fileSystem.Directory.GetDirectories(Arg.Any<string>()).Returns([EXT_DIR]);
         _fileSystem.File.Exists(manifestPath).Returns(true);
         _xDocumentLoader.Load(manifestPath).Returns(_packageManifest);
 
@@ -153,8 +294,8 @@ public sealed class ExtensionManagerTests
     [Fact]
     public async Task UpdateExtensionAsync_VsixInstallerNotFound_PrintsErrorAndReturnsEmpty()
     {
-        // Arrange       
-        using var server = WireMockServer.Start(); 
+        // Arrange
+        using var server = WireMockServer.Start();
         var fakeUrl = server.Url + "/vsix";
         var instance = new VisualStudioInstance { InstallationPath = "C:/VS", InstanceId = "abc" };
         var ext = new ExtensionInfo { Name = "TestExt", Id = "ext1", InstalledVersion = "1.0", VsixUrl = fakeUrl };
@@ -175,7 +316,7 @@ public sealed class ExtensionManagerTests
     public async Task UpdateExtensionAsync_SuccessfulUpdate_DeletesVsix()
     {
         // Arrange
-        using var server = WireMockServer.Start(); 
+        using var server = WireMockServer.Start();
         var fakeUrl = server.Url + "/vsix";
         var instance = new VisualStudioInstance { InstallationPath = "C:/VS", InstanceId = "abc" };
         var ext = new ExtensionInfo { Name = "TestExt", Id = "ext1", InstalledVersion = "1.0", VsixUrl = fakeUrl };
@@ -190,5 +331,85 @@ public sealed class ExtensionManagerTests
 
         // Assert
         result.ShouldBe("updated");
+    }
+
+    [Fact]
+    public async Task UpdateExtensionAsync_SuccessfulUpdateAndErrorDeletinVsix__PrintsError()
+    {
+        // Arrange
+        using var server = WireMockServer.Start();
+        var fakeUrl = server.Url + "/vsix";
+
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc"
+        };
+
+        var ext = new ExtensionInfo
+        {
+            Name = "TestExt",
+            Id = "ext1",
+            InstalledVersion = "1.0",
+            VsixUrl = fakeUrl
+        };
+
+        _fileSystem.File.Exists(Arg.Any<string>()).Returns(true);
+        _processRunner.RunAsync(Arg.Any<string>(), Arg.Any<string>()).Returns("updated");
+        _fileSystem.File.WhenForAnyArgs(static f => f.Delete(Arg.Any<string>())).Throws(new IOException("Error deleting file"));
+
+        server.Given(Request.Create().WithPath("/vsix").UsingGet())
+            .RespondWith(Response.Create().WithStatusCode(200).WithBody("FAKE_VSIX"));
+
+        // Act
+        var result = await _manager.UpdateExtensionAsync(ext, instance);
+
+        // Assert
+        result.ShouldBe("updated");
+        _console.Output.ShouldContain("Error deleting temporary VSIX file.");
+    }
+
+    [Fact]
+    public async Task PopulateExtensionInfoFromMarketplaceAsync_WithExtensions_CallOnPopulate()
+    {
+        // Arrange
+        var instance = new VisualStudioInstance
+        {
+            InstallationPath = "C:/VS",
+            InstanceId = "abc"
+        };
+
+        var ext1 = new ExtensionInfo
+        {
+            Name = "TestExt",
+            Id = "ext1",
+            InstalledVersion = "1.0"
+        };
+
+        var ext2 = new ExtensionInfo
+        {
+            Name = "TestExt2",
+            Id = "ext2",
+            InstalledVersion = "1.0"
+        };
+
+        _marketplaceHelper.PopulateExtensionInfoFromMarketplaceAsync(ext1, instance).Returns(Task.CompletedTask);
+
+        var onPopulate = Substitute.For<Action<ExtensionInfo>>();
+
+        // Act
+        await _manager.PopulateExtensionInfoFromMarketplaceAsync(instance, [ext1, ext2], onPopulate);
+
+        // Assert
+        await _marketplaceHelper
+            .Received(1)
+            .PopulateExtensionInfoFromMarketplaceAsync(ext1, instance);
+
+        await _marketplaceHelper
+            .Received(1)
+            .PopulateExtensionInfoFromMarketplaceAsync(ext2, instance);
+
+        onPopulate.Received(1).Invoke(ext1);
+        onPopulate.Received(1).Invoke(ext2);
     }
 }

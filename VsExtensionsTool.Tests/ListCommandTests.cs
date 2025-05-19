@@ -75,7 +75,7 @@ public sealed class ListCommandTests
     {
         // Arrange
         var vsInstance = new VisualStudioInstance { DisplayName = "VS2022" };
-        
+
         _vsManager.SelectVisualStudioInstanceAsync()
             .Returns(Task.FromResult<VisualStudioInstance?>(vsInstance));
 
@@ -98,5 +98,38 @@ public sealed class ListCommandTests
         (
             extensions
         );
+    }
+
+    [Fact]
+    public async Task ListCommand_WithOutdated_DiplayExtensionsWithVersion()
+    {
+        // Arrange
+        var vsInstance = new VisualStudioInstance { DisplayName = "VS2022" };
+
+        _vsManager.SelectVisualStudioInstanceAsync()
+            .Returns(Task.FromResult<VisualStudioInstance?>(vsInstance));
+
+        var extensions = new List<ExtensionInfo>
+        {
+            new() { Name = "Ext1", Id = "ext1", InstalledVersion = "1.0.0.0", LatestVersion = "2.0.0.0" },
+            new() { Name = "Ext2", Id = "ext2", InstalledVersion = "2.0.0.0", LatestVersion = "2.0.0.0" }
+        };
+
+        _extensionManager.GetExtensions(vsInstance, null)
+            .Returns(extensions);
+
+        var root = new RootCommand { _command };
+
+        // Act
+        await root.InvokeAsync("list --outdated");
+
+        // Assert
+        _displayHelper.Received(1).DisplayExtensions
+        (
+           Arg.Is<List<ExtensionInfo>>(static x => x.Count == 1 && x[0].Id == "ext1")
+        );
+
+        await _displayHelper.Received(1)
+            .PopulateExtensionsInfoFromMarketplaceAsync(extensions, vsInstance);
     }
 }
