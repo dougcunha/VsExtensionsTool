@@ -101,7 +101,7 @@ public sealed class ListCommandTests
     }
 
     [Fact]
-    public async Task ListCommand_WithOutdated_DiplayExtensionsWithVersion()
+    public async Task ListCommand_WithOutdated_DisplayExtensionsWithVersion()
     {
         // Arrange
         var vsInstance = new VisualStudioInstance { DisplayName = "VS2022" };
