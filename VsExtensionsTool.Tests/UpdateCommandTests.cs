@@ -11,7 +11,7 @@ using NSubstitute;
 namespace VsExtensionsTool.Tests;
 
 /// <summary>
-/// Test suite for UpdateCommand usando SMock para mockar dependências estáticas.
+/// Test suite for UpdateCommand using SMock to mock static dependencies.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public sealed class UpdateCommandTests
