@@ -1,12 +1,11 @@
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
 
 namespace VsExtensionsTool.Helpers;
 
-public static class MarketplaceHelper
+/// <inheritdoc/>
+public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
 {
     private const string MARKETPLACE_API_URL = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery";
     private const string MARKETPLACE_API_VERSION = "3.2-preview.1";
@@ -38,13 +37,8 @@ public static class MarketplaceHelper
     // ReSharper restore InconsistentNaming
     // ReSharper restore UnusedMember.Local
 
-    /// <summary>
-    /// Gets the latest version of a Visual Studio extension from the Marketplace by its Id.
-    /// </summary>
-    /// <param name="extension">The extension info.</param>
-    /// <param name="vsInstance">The selected instance of Visual Studio.</param>
-    /// <returns>The latest version string, or "Not found" if not available.</returns>
-    public static async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
+    /// <inheritdoc/>
+    public async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
     {
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("Accept", "application/json;api-version=" + MARKETPLACE_API_VERSION);
@@ -98,7 +92,7 @@ public static class MarketplaceHelper
         }
         catch (Exception ex)
         {
-            AnsiConsole.MarkupLine($"[red]Error occurred while fetching the latest version. {ex.Message.EscapeMarkup()}[/]");
+            console.MarkupLine($"[red]Error occurred while fetching the latest version. {ex.Message.EscapeMarkup()}[/]");
         }
     }
 
@@ -111,6 +105,15 @@ public static class MarketplaceHelper
         ["deflate"] = static res => new DeflateStream(res, CompressionMode.Decompress)
     };
 
+    /// <summary>
+    /// Asynchronously retrieves the response content as a string, handling decompression if necessary.
+    /// </summary>
+    /// <remarks>This method checks the content encoding of the response and applies the appropriate
+    /// decompression if the encoding is supported. If no decompression is required, the content is read directly as a
+    /// string.</remarks>
+    /// <param name="response">The <see cref="HttpResponseMessage"/> containing the response content to process.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the response content as a string. If
+    /// the response content is compressed, it is decompressed before being returned.</returns>
     private static async Task<string> GetResponseStringAsync(HttpResponseMessage response)
     {
         if (!response.Content.Headers.ContentEncoding.Any(static e => _encodings.Contains(e)))
@@ -123,6 +126,17 @@ public static class MarketplaceHelper
         return await reader.ReadToEndAsync().ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Attempts to extract the version and VSIX URL from the provided HTTP response.
+    /// </summary>
+    /// <remarks>This method parses a JSON response to extract the first available version and its associated
+    /// VSIX URL. If the response does not contain the expected structure or the required data, the method returns <see
+    /// langword="null"/> for the corresponding values.</remarks>
+    /// <param name="response">The HTTP response containing the JSON payload to parse.</param>
+    /// <returns>A tuple containing the extracted version and VSIX URL: <list type="bullet"> <item><description><c>version</c>:
+    /// The version string if found; otherwise, <see langword="null"/>.</description></item>
+    /// <item><description><c>vsixUrl</c>: The VSIX download URL if found; otherwise, <see
+    /// langword="null"/>.</description></item> </list></returns>
     private static async Task<(string? version, string? vsixUrl)> TryExtractVersionAndVsixUrlAsync(HttpResponseMessage response)
     {
         var responseString = await GetResponseStringAsync(response).ConfigureAwait(false);

@@ -1,0 +1,19 @@
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Exclude>
+            [xunit.*]*
+            [NSubstitute.*]*
+            [Spectre.Console.*]*
+            [System.*]*
+            [Microsoft.*]*
+            [netstandard]*
+            [VsExtensionsTool.Tests]*
+          </Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

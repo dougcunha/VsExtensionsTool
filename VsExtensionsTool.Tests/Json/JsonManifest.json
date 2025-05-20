@@ -1,0 +1,46 @@
+{
+  "id": "CodeBlockEndTag.KhaosCoders.5743e483-e347-4815-8c9d-7fc46ca75382",
+  "version": "3.2.1.1",
+  "type": "Vsix",
+  "vsixId": "CodeBlockEndTag.KhaosCoders.5743e483-e347-4815-8c9d-7fc46ca75382",
+  "extensionDir": "[installdir]\\Common7\\IDE\\Extensions\\zawppdvb.qdi",
+  "files": [
+    {
+      "fileName": "/extension.vsixmanifest",
+      "sha256": null
+    },
+    {
+      "fileName": "/CodeBlockEndTag.dll",
+      "sha256": null
+    },
+    {
+      "fileName": "/Microsoft.VisualStudio.DpiAwareness.dll",
+      "sha256": null
+    },
+    {
+      "fileName": "/CodeBlockEndTag.pkgdef",
+      "sha256": null
+    },
+    {
+      "fileName": "/ReleaseNotes.txt",
+      "sha256": null
+    },
+    {
+      "fileName": "/LICENSE.txt",
+      "sha256": null
+    },
+    {
+      "fileName": "/Resources/CBETagPackage.ico",
+      "sha256": null
+    },
+    {
+      "fileName": "/Resources/VSPreview.png",
+      "sha256": null
+    }
+  ],
+  "installSizes": { "targetDrive": 258722 },
+  "dependencies": {
+    "Microsoft.VisualStudio.Component.Roslyn.LanguageServices": "[15.0.26208.0,18.0)",
+    "Microsoft.VisualStudio.Component.CoreEditor": "[15.0.26208.0,18.0)"
+  }
+}

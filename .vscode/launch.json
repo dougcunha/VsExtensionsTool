@@ -2,10 +2,19 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "List",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "args": ["list"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
             "name": "ListOutdated",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
             "args": ["list", "-o"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
@@ -14,7 +23,7 @@
             "name": "ListVersion",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
             "args": ["list", "-v"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
@@ -23,7 +32,7 @@
             "name": "Update",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
             "args": ["upd"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
@@ -32,7 +41,7 @@
             "name": "ListVs",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
             "args": ["list_vs"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
@@ -41,10 +50,10 @@
             "name": "Help",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Debug/net9.0/VsExtensionsTool.exe",
+            "program": "${workspaceFolder}/VsExtensionsTool/bin/Debug/net9.0/VsExtensionsTool.exe",
             "args": ["--help"],
             "cwd": "${workspaceFolder}",
             "console": "externalTerminal"
-        }
+        },
     ]
 }

@@ -20,34 +20,16 @@ public sealed class VisualStudioInstance
     public string? InstallationPath { get; set; }
 
     /// <summary>
-    /// The path to the main product executable.
-    /// </summary>
-    [JsonPropertyName("productPath")]
-    public string? ProductPath { get; set; }
-
-    /// <summary>
     /// The channel ID of the Visual Studio installation.
     /// </summary>
     [JsonPropertyName("channelId")]
     public string? ChannelId { get; set; }
 
     /// <summary>
-    /// The channel URI of the Visual Studio installation.
-    /// </summary>
-    [JsonPropertyName("channelUri")]
-    public string? ChannelUri { get; set; }
-
-    /// <summary>
     /// The version of the Visual Studio installation.
     /// </summary>
     [JsonPropertyName("installationVersion")]
     public string? InstallationVersion { get; set; }
-
-    /// <summary>
-    /// Indicates if the installation is a prerelease (Preview).
-    /// </summary>
-    [JsonPropertyName("isPrerelease")]
-    public bool IsPrerelease { get; set; }
 
     /// <summary>
     /// The unique instance ID of the Visual Studio installation.
