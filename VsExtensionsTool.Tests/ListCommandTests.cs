@@ -11,7 +11,7 @@ using NSubstitute;
 namespace VsExtensionsTool.Tests;
 
 /// <summary>
-/// Test suite for ListCommand using StaticMock para mockar métodos estáticos.
+/// Test suite for ListCommand using StaticMock to mock static methods.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public sealed class ListCommandTests
