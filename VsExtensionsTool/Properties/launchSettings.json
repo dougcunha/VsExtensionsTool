@@ -6,19 +6,19 @@
     },
     "ListVersion": {
       "commandName": "Project",
-      "commandLineArgs": "/list /version"
+      "commandLineArgs": "list /version"
     },
     "Update": {
       "commandName": "Project",
-      "commandLineArgs": "/update"
-    },
-    "Help": {
-      "commandName": "Project",
-      "commandLineArgs": "/list /help"
+      "commandLineArgs": "update"
     },
     "ListOutdated": {
       "commandName": "Project",
-      "commandLineArgs": "/list --outdated"
+      "commandLineArgs": "list --outdated"
+    },
+    "ListHelp": {
+      "commandName": "Project",
+      "commandLineArgs": "list /help"
     }
   }
 }

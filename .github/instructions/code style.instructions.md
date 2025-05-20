@@ -10,8 +10,9 @@ Formatting and style standards for this C# project:
 - Use expression-bodied members on a new line.
 - Constant names in UPPER_CASE.
 - Use var when the type is obvious.
-- XMLDoc is mandatory for public classes and methods.
+- XMLDoc in English is mandatory for public classes and methods.
 - Non-inheritable classes must be sealed.
 - DRY: avoid code repetition.
 - Use modern collections and initializers ([] and [..] when possible).
 - <inherited /> for inherited members in XMLDoc.
+- Always place opening parentheses or braces on a new line when breaking lines for method calls, object initializers, or similar constructs.
