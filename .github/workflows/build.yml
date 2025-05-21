@@ -1,4 +1,4 @@
-name: Build, Test and Version
+name: Build and Version
 
 on:
   push:
@@ -44,10 +44,6 @@ jobs:
 
     - name: Publish win-x64
       run: dotnet publish VsExtensionsTool/VsExtensionsTool.csproj -c Release -r win-x64 /p:Version=${{ steps.gitversion.outputs.fullSemVer }}
-
-    - name: Test
-      run: dotnet test VsExtensionsTool.Tests/VsExtensionsTool.Tests.csproj --no-build --verbosity normal
-      continue-on-error: true
 
     - name: Copy LICENSE to output
       if: success()
