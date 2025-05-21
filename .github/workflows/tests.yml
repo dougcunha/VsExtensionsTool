@@ -1,0 +1,49 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+    tags: [ '*' ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore VsExtensionsTool.Tests/VsExtensionsTool.Tests.csproj
+
+    - name: Test with coverage
+      run: dotnet test VsExtensionsTool.Tests/VsExtensionsTool.Tests.csproj --verbosity normal --collect:"XPlat Code Coverage" --logger trx
+
+    - name: Publish test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: '**/TestResults/*.trx'
+
+    - name: Publish code coverage
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-coverage
+        path: '**/TestResults/**/coverage.cobertura.xml'
+
+    - name: Upload coverage to Codecov
+      if: always()
+      uses: codecov/codecov-action@v4
+      with:
+        files: '**/TestResults/**/coverage.cobertura.xml'
+        fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
