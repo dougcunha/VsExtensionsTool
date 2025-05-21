@@ -102,19 +102,19 @@ VsExtensionsTool.exe upd
 
 ### Help
 
-![Help](images/help.png)
+![Help](VsExtensionsTool/images/help.png)
 
 ### Listing Extensions
 
-![Listing Extensions](images/list-extensions.png)
+![Listing Extensions](VsExtensionsTool/images/list-extensions.png)
 
 ### Removing Extension
 
-![Removing Extension](images/remove-extension.png)
+![Removing Extension](VsExtensionsTool/images/remove-extension.png)
 
 ### Updating Extension
 
-![Update Extension](images/update-extension.gif)
+![Update Extension](VsExtensionsTool/images/update-extension.gif)
 
 ## Dependencies
 
