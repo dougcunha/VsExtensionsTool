@@ -1,12 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
-using NSubstitute;
-using Shouldly;
-using Spectre.Console.Testing;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-
-namespace VsExtensionsTool.Tests;
+namespace VsExtensionsTool.Tests.Managers;
 
 /// <summary>
 /// Unit tests for VisualStudioManager.

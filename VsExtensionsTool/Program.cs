@@ -1,12 +1,14 @@
 ﻿using VsExtensionsTool.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO.Abstractions;
+using System.Net.Http;
+using Microsoft.Extensions.Http; // Necessário para AddHttpClient
 
 var services = new ServiceCollection();
 var console = AnsiConsole.Console;
 services.AddSingleton(console);
 services.AddSingleton<IExtensionListDisplayHelper, ExtensionListDisplayHelper>();
-services.AddSingleton<IMarketplaceHelper, MarketplaceHelper>();
+services.AddHttpClient<IMarketplaceHelper, MarketplaceHelper>();
 services.AddSingleton<IVisualStudioDisplayHelper, VisualStudioDisplayHelper>();
 services.AddSingleton<IVisualStudioManager, VisualStudioManager>();
 services.AddSingleton<IExtensionManager, ExtensionManager>();

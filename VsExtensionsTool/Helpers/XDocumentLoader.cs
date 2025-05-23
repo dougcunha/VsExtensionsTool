@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Xml.Linq;
 
 namespace VsExtensionsTool.Helpers;
@@ -6,6 +7,7 @@ namespace VsExtensionsTool.Helpers;
 /// <summary>
 /// Default implementation of IXDocumentLoader using XDocument.Load.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class XDocumentLoader : IXDocumentLoader
 {
     /// <inheritdoc />

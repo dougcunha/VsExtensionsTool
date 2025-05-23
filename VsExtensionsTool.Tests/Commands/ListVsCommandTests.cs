@@ -1,12 +1,4 @@
-using System.CommandLine;
-using System.Diagnostics.CodeAnalysis;
-using NSubstitute;
-using VsExtensionsTool.Commands;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-
-namespace VsExtensionsTool.Tests;
+namespace VsExtensionsTool.Tests.Commands;
 
 /// <summary>
 /// Test suite for ListVsCommand using SMock to mock static dependencies.
