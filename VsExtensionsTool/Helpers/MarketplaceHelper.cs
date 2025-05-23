@@ -5,8 +5,9 @@ using System.Text.Json;
 namespace VsExtensionsTool.Helpers;
 
 /// <inheritdoc/>
-public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
+public sealed class MarketplaceHelper(IAnsiConsole console, HttpClient httpClient, string? marketplaceUrl = null) : IMarketplaceHelper
 {
+    private readonly string _marketplaceUrl = marketplaceUrl ?? MARKETPLACE_API_URL;
     private const string MARKETPLACE_API_URL = "https://marketplace.visualstudio.com/_apis/public/gallery/extensionquery";
     private const string MARKETPLACE_API_VERSION = "3.2-preview.1";
     private const int FILTERTYPE_VSIX_ID = 17;
@@ -15,7 +16,6 @@ public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
     [Flags]
     private enum ExtensionQueryOptions
     {
-        // ReSharper disable InconsistentNaming
         // ReSharper disable UnusedMember.Local
         None = 0,
         IncludeVersions = 1,
@@ -33,17 +33,16 @@ public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
         IncludeMarketPlace = 4096,
         IncludeMetadata = 8192,
         IncludeFrameworks = 16384
+        // ReSharper restore UnusedMember.Local
     }
-    // ReSharper restore InconsistentNaming
-    // ReSharper restore UnusedMember.Local
 
     /// <inheritdoc/>
     public async Task PopulateExtensionInfoFromMarketplaceAsync(ExtensionInfo extension, VisualStudioInstance vsInstance)
     {
-        using var client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Accept", "application/json;api-version=" + MARKETPLACE_API_VERSION);
-        client.DefaultRequestHeaders.Add("User-Agent", $"VSIDE-{vsInstance.InstallationVersion}");
-        client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+        httpClient.DefaultRequestHeaders.Clear();
+        httpClient.DefaultRequestHeaders.Add("Accept", "application/json;api-version=" + MARKETPLACE_API_VERSION);
+        httpClient.DefaultRequestHeaders.Add("User-Agent", $"VSIDE-{vsInstance.InstallationVersion}");
+        httpClient.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
 
         //remove all spaces from publisher
         var publisher = extension.Publisher.Replace(" ", string.Empty);
@@ -80,15 +79,18 @@ public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
 
         try
         {
-            var response = await client.PostAsync(MARKETPLACE_API_URL, content).ConfigureAwait(false);
+            var response = await httpClient.PostAsync(_marketplaceUrl, content).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
                 var (version, url) = await TryExtractVersionAndVsixUrlAsync(response).ConfigureAwait(false);
-
                 extension.LatestVersion = version ?? "Not found";
                 extension.VsixUrl = url;
+                return;
             }
+
+            var errorMessage = await GetResponseStringAsync(response).ConfigureAwait(false);
+            console.MarkupLineInterpolated($"[red]Error occurred while fetching the latest version. {errorMessage}[/]");
         }
         catch (Exception ex)
         {
@@ -97,7 +99,6 @@ public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
     }
 
     private static readonly string[] _encodings = ["gzip", "br", "deflate"];
-
     private static readonly Dictionary<string, Func<Stream, Stream>> _streamFactory = new()
     {
         ["gzip"] = static res => new GZipStream(res, CompressionMode.Decompress),
@@ -168,7 +169,9 @@ public sealed class MarketplaceHelper(IAnsiConsole console) : IMarketplaceHelper
         {
             if (!property.TryGetProperty("key", out var propertyType)
                 || propertyType.GetString() != "DownloadUpdateUrl")
+            {
                 continue;
+            }
 
             vsixUrl = property.GetProperty("value").GetString();
 

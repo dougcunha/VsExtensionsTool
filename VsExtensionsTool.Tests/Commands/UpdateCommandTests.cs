@@ -1,14 +1,4 @@
-using System.CommandLine;
-using Shouldly;
-using Spectre.Console.Testing;
-using VsExtensionsTool.Commands;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-using VsExtensionsTool.Helpers;
-using System.Diagnostics.CodeAnalysis;
-using NSubstitute;
-
-namespace VsExtensionsTool.Tests;
+namespace VsExtensionsTool.Tests.Commands;
 
 /// <summary>
 /// Test suite for UpdateCommand using SMock to mock static dependencies.

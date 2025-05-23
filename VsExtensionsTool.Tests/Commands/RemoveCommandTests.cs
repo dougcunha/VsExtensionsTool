@@ -1,13 +1,4 @@
-using System.CommandLine;
-using Shouldly;
-using VsExtensionsTool.Commands;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-using Spectre.Console.Testing;
-using System.Diagnostics.CodeAnalysis;
-using NSubstitute;
-
-namespace VsExtensionsTool.Tests;
+namespace VsExtensionsTool.Tests.Commands;
 
 /// <summary>
 /// Integration tests for RemoveCommand.

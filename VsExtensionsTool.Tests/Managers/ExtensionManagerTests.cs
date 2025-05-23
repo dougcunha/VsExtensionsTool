@@ -1,19 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
-using NSubstitute;
-using Shouldly;
-using System.IO.Abstractions;
-using VsExtensionsTool.Helpers;
-using VsExtensionsTool.Managers;
-using VsExtensionsTool.Models;
-using Spectre.Console.Testing;
 using System.Xml.Linq;
-using WireMock.Server;
-using WireMock.RequestBuilders;
-using WireMock.ResponseBuilders;
 
-namespace VsExtensionsTool.Tests;
-
-using NSubstitute.ExceptionExtensions;
+namespace VsExtensionsTool.Tests.Managers;
 
 /// <summary>
 /// Unit tests for ExtensionManager.

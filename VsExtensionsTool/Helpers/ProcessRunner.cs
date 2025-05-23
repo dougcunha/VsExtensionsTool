@@ -1,9 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace VsExtensionsTool.Helpers;
 
 /// <inheritdoc />
 /// <summary>
 /// Default implementation of <see cref="T:VsExtensionsTool.Helpers.IProcessRunner" /> using <see cref="T:System.Diagnostics.Process" />.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class ProcessRunner : IProcessRunner
 {
     /// <inheritdoc />
