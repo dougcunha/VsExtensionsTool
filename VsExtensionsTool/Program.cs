@@ -1,10 +1,8 @@
 ﻿using VsExtensionsTool.Commands;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO.Abstractions;
 
-var builder = Host.CreateApplicationBuilder(args);
-var services = builder.Services;
+var services = new ServiceCollection();
 var console = AnsiConsole.Console;
 services.AddSingleton(console);
 services.AddSingleton<IExtensionListDisplayHelper, ExtensionListDisplayHelper>();
@@ -20,15 +18,14 @@ services.AddTransient<RemoveCommand>();
 services.AddTransient<UpdateCommand>();
 services.AddTransient<IXDocumentLoader, XDocumentLoader>();
 
-using var host = builder.Build();
-await host.StartAsync().ConfigureAwait(false);
+var serviceProvider = services.BuildServiceProvider();
 
 var rootCommand = new RootCommand("VsExtensionsTool - Visual Studio Extensions Manager");
 
-rootCommand.AddCommand(host.Services.GetRequiredService<ListCommand>());
-rootCommand.AddCommand(host.Services.GetRequiredService<ListVsCommand>());
-rootCommand.AddCommand(host.Services.GetRequiredService<RemoveCommand>());
-rootCommand.AddCommand(host.Services.GetRequiredService<UpdateCommand>());
+rootCommand.AddCommand(serviceProvider.GetRequiredService<ListCommand>());
+rootCommand.AddCommand(serviceProvider.GetRequiredService<ListVsCommand>());
+rootCommand.AddCommand(serviceProvider.GetRequiredService<RemoveCommand>());
+rootCommand.AddCommand(serviceProvider.GetRequiredService<UpdateCommand>());
 
 await rootCommand.InvokeAsync(args).ConfigureAwait(false);
 
