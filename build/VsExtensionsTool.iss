@@ -28,8 +28,8 @@ Name: "{group}\Uninstall VsExtensionsTool"; Filename: "{uninstallexe}"
 [Run]
 Filename: "{app}\VsExtensionsTool.exe"; Description: "Run VsExtensionsTool"; Flags: nowait postinstall skipifsilent
 ; Add to system PATH (requires admin)
-Filename: "cmd.exe"; Parameters: "/C setx /M PATH \"%PATH%;{commonappdata}\\VsExtensionsTool\""; StatusMsg: "Adding VsExtensionsTool to system PATH..."; Flags: runhidden
+Filename: "cmd.exe"; Parameters: '/C setx /M PATH "%PATH%;{commonappdata}\VsExtensionsTool"'; StatusMsg: "Adding VsExtensionsTool to system PATH..."; Flags: runhidden
 
 [UninstallRun]
 ; Remove from system PATH (best effort, does not restore previous PATH)
-Filename: "cmd.exe"; Parameters: "/C setx /M PATH \"%PATH:;{commonappdata}\\VsExtensionsTool=;%\""; StatusMsg: "Removing VsExtensionsTool from system PATH..."; Flags: runhidden
+Filename: "cmd.exe"; Parameters: '/C setx /M PATH "%PATH:;{commonappdata}\VsExtensionsTool=;%"'; StatusMsg: "Removing VsExtensionsTool from system PATH..."; Flags: runhidden
