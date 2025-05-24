@@ -1,5 +1,7 @@
 
 
+#define MyAppVersion GetEnv('GITVERSION_FULLSEMVER')
+
 [Setup]
 AppName=VsExtensionsTool
 AppVersion={#MyAppVersion}
@@ -10,8 +12,6 @@ OutputBaseFilename=VsExtensionsTool-{#MyAppVersion}.win-x64
 Compression=lzma
 SolidCompression=yes
 LicenseFile=..\VsExtensionsTool\LICENSE
-
-#define MyAppVersion GetEnv('GITVERSION_FULLSEMVER')
 
 [Dirs]
 Name: "{commonappdata}\\VsExtensionsTool"
