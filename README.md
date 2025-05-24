@@ -1,7 +1,7 @@
 # VsExtensionsTool
 
-![Build Status](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/build.yml/badge.svg?branch=master)
-![Tests](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/tests.yml/badge.svg?branch=master)
+[![Build Status](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/build.yml)
+[![Tests](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/dougcunha/VsExtensionsTool/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/dougcunha/VsExtensionsTool/branch/master/graph/badge.svg)](https://codecov.io/gh/dougcunha/VsExtensionsTool)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
