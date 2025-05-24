@@ -48,7 +48,7 @@ jobs:
 
     - name: Copy LICENSE to output
       if: success()
-      run: copy VsExtensionsTool/LICENSE VsExtensionsTool/bin/Release/net9.0/win-x64/publish/
+      run: copy LICENSE VsExtensionsTool/bin/Release/net9.0/win-x64/publish/
 
     - name: List publish folder before zip
       if: success()
