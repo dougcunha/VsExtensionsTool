@@ -11,6 +11,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{C4AD
 		clean.ps1 = clean.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub", "GitHub", "{A508EFC4-0EDB-31DF-620D-ECD3B3B4B781}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build.yml = .github\workflows\build.yml
+		.github\workflows\tests.yml = .github\workflows\tests.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{B1A1B1B1-0000-0000-0000-000000000001}"
+	ProjectSection(SolutionItems) = preProject
+		build\VsExtensionsTool.iss = build\VsExtensionsTool.iss
+		build\innosetup-install.ps1 = build\innosetup-install.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
