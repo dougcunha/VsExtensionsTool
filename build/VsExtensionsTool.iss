@@ -1,0 +1,35 @@
+
+
+[Setup]
+AppName=VsExtensionsTool
+AppVersion={#MyAppVersion}
+DefaultDirName={pf}\VsExtensionsTool
+DefaultGroupName=VsExtensionsTool
+OutputDir=..
+OutputBaseFilename=VsExtensionsTool-{#MyAppVersion}.win-x64
+Compression=lzma
+SolidCompression=yes
+LicenseFile=..\VsExtensionsTool\LICENSE
+
+#define MyAppVersion GetEnv('GITVERSION_FULLSEMVER')
+
+[Dirs]
+Name: "{commonappdata}\\VsExtensionsTool"
+
+
+[Files]
+Source: "..\VsExtensionsTool\bin\Release\net9.0\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\VsExtensionsTool\bin\Release\net9.0\win-x64\publish\VsExtensionsTool.exe"; DestDir: "{commonappdata}\\VsExtensionsTool"; Flags: ignoreversion
+
+[Icons]
+Name: "{group}\VsExtensionsTool"; Filename: "{app}\VsExtensionsTool.exe"
+Name: "{group}\Uninstall VsExtensionsTool"; Filename: "{uninstallexe}"
+
+[Run]
+Filename: "{app}\VsExtensionsTool.exe"; Description: "Run VsExtensionsTool"; Flags: nowait postinstall skipifsilent
+; Add to system PATH (requires admin)
+Filename: "cmd.exe"; Parameters: "/C setx /M PATH \"%PATH%;{commonappdata}\\VsExtensionsTool\""; StatusMsg: "Adding VsExtensionsTool to system PATH..."; Flags: runhidden
+
+[UninstallRun]
+; Remove from system PATH (best effort, does not restore previous PATH)
+Filename: "cmd.exe"; Parameters: "/C setx /M PATH \"%PATH:;{commonappdata}\\VsExtensionsTool=;%\""; StatusMsg: "Removing VsExtensionsTool from system PATH..."; Flags: runhidden

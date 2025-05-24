@@ -1,6 +1,7 @@
 name: Build and Version
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
     tags: [ '*' ]
@@ -53,12 +54,32 @@ jobs:
       if: success()
       run: dir VsExtensionsTool/bin/Release/net9.0/win-x64/publish
 
+    - name: Install Inno Setup
+      if: success()
+      run: pwsh build/innosetup-install.ps1
+
+    - name: Build Inno Setup installer
+      if: success()
+      env:
+        GITVERSION_FULLSEMVER: ${{ steps.gitversion.outputs.fullSemVer }}
+      run: |
+        & "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe" build/VsExtensionsTool.iss
+
     - name: Publish zip artifact
       if: success()
       run: |
         cd VsExtensionsTool/bin/Release/net9.0/win-x64/publish
         del VsExtensionsTool-*.zip 2>NUL
         7z a VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip .\*
+
+    - name: Upload installer to workflow artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: VsExtensionsTool.Installer
+        path: build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
+        if-no-files-found: ignore
+        retention-days: 7
 
     - name: Upload zip to workflow artifacts
       if: success()
@@ -69,8 +90,11 @@ jobs:
         if-no-files-found: ignore
         retention-days: 7
 
-    - name: Upload release to GitHub Releases
+
+    - name: Upload installer to GitHub Releases
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
       with:
-        files: VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
+        files: |
+          build/VsExtensionsTool-Setup.exe
+          VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
