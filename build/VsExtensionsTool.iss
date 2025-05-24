@@ -9,7 +9,7 @@ OutputDir=.
 OutputBaseFilename=VsExtensionsTool-{#MyAppVersion}.win-x64
 Compression=lzma
 SolidCompression=yes
-LicenseFile=..\VsExtensionsTool\LICENSE
+LicenseFile=..\LICENSE
 
 [Dirs]
 Name: "{commonappdata}\VsExtensionsTool"
