@@ -96,5 +96,5 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          build/VsExtensionsTool-Setup.exe
+          build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
