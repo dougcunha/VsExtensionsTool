@@ -103,13 +103,23 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - uses: blauqs/actions-download-asset@v1
-      with:
-        repo: 'microsoft/winget-create'
-        version: 'latest'
-        file: 'winget-create.msixbundle'
-        out: './'
-        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Download WingetCreate ZIP
+      shell: bash
+      run: |
+        curl -sSL -o wingetcreate.zip \
+          $(curl -s https://api.github.com/repos/microsoft/winget-create/releases/latest \
+            | grep browser_download_url \
+            | grep 'windows-x64.zip' \
+            | cut -d '"' -f 4)
+        unzip wingetcreate.zip -d wingetcreate
+
+    - name: Use WingetCreate
+      shell: pwsh
+      run: |
+        $exe = "$(pwd)/wingetcreate/wingetcreate.exe"
+        & $exe --version
+        # Use $exe in subsequent steps to submit your package, e.g.:
+        # & $exe submit ...
       continue-on-error: true
 
     - name: Submit to Winget
@@ -126,5 +136,6 @@ jobs:
         }
         $version = $tag.TrimStart('v')
         $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
-        & "$env:RUNNER_TEMP\wingetcreate.exe" submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
+        $wingetExe = "$(pwd)/wingetcreate/wingetcreate.exe"
+        & $wingetExe submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
       continue-on-error: false
