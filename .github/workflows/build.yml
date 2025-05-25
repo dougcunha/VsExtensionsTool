@@ -118,13 +118,10 @@ jobs:
         Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "wingetcreate.exe"
       continue-on-error: false
 
-    - name: Submit to Winget
+    - name: Gerar Manifesto Winget
       if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
       shell: pwsh
-      env:
-        WINGET_PAT: ${{ secrets.WINGET_PAT }}
       run: |
-        # Detect tag: from input if manual, else from GitVersion
         if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and -not [string]::IsNullOrEmpty('${{ github.event.inputs.tag }}')) {
           $tag = '${{ github.event.inputs.tag }}'
         } else {
@@ -133,5 +130,28 @@ jobs:
         $version = $tag.TrimStart('v')
         $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
         $wingetExe = "$(pwd)/wingetcreate.exe"
-        & $wingetExe submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
+        $manifestDir = "winget-manifest"
+        if (Test-Path $manifestDir) { Remove-Item $manifestDir -Recurse -Force }
+        New-Item -ItemType Directory -Path $manifestDir | Out-Null
+        & $wingetExe new --silent --output $manifestDir --url $installerUrl --version $version --publisher "SeuPublisher" --package "VsExtensionsTool" --name "VsExtensionsTool" --license "MIT" --description "Ferramenta para gerenciar extensões do Visual Studio."
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "Falha ao gerar o manifesto do Winget."
+          exit 1
+        }
+      continue-on-error: false
+
+    - name: Submit to Winget
+      if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+      shell: pwsh
+      env:
+        WINGET_PAT: ${{ secrets.WINGET_PAT }}
+      run: |
+        $wingetExe = "$(pwd)/wingetcreate.exe"
+        $manifestDir = "winget-manifest"
+        $tag = if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and -not [string]::IsNullOrEmpty('${{ github.event.inputs.tag }}')) {
+          '${{ github.event.inputs.tag }}'
+        } else {
+          'v${{ steps.gitversion.outputs.fullSemVer }}'
+        }
+        & $wingetExe submit --prtitle "VsExtensionsTool $tag" --token "$env:WINGET_PAT" $manifestDir
       continue-on-error: true
