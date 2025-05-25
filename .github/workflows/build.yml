@@ -103,22 +103,10 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Download WingetCreate
-      shell: pwsh
+    - name: Instalar WingetCreate via WinGet
       run: |
-        $wingetcreateUrl = "https://github.com/microsoft/winget-create/releases/latest/download/wingetcreate.exe"
-        Invoke-WebRequest -Uri $wingetcreateUrl -OutFile "$env:RUNNER_TEMP\wingetcreate.exe"
-        $env:PATH += ";$env:RUNNER_TEMP"
-        try {
-          & "$env:RUNNER_TEMP\wingetcreate.exe" --version
-        } catch {
-          Write-Host "Ignoring non-zero exit code from --version"
-        }
-        if (!(Test-Path "$env:RUNNER_TEMP\wingetcreate.exe")) {
-          Write-Error "wingetcreate not found or not working correctly after download."
-          exit 1
-        }
-      continue-on-error: false
+        winget install wingetcreate --accept-source-agreements --accept-package-agreements
+      continue-on-error: true
 
     - name: Submit to Winget
       if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
