@@ -2,6 +2,11 @@ name: Build and Version
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g., v1.2.3)'
+        required: false
+        default: ''
   push:
     branches: [ master ]
     tags: [ '*' ]
@@ -99,27 +104,39 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Publish to Winget
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+
+
+    - name: Upload Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VsExtensionsTool.Installer
+        path: build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
+
+    - name: Install WingetCreate Tool
+      shell: pwsh
+      run: |
+        Install-Module -Name Microsoft.WinGet.Client -Scope CurrentUser -Force
+        Install-Module -Name Microsoft.WinGet.Create -Scope CurrentUser -Force
+        wingetcreate --version
+        if ($LASTEXITCODE -ne 0) {
+          Write-Error "wingetcreate not found or not working correctly after installation."
+          exit 1
+        }
+      continue-on-error: false
+
+    - name: Submit to Winget
+      if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
+      shell: pwsh
       env:
         WINGET_PAT: ${{ secrets.WINGET_PAT }}
-        APP_VERSION: ${{ steps.gitversion.outputs.fullSemVer }}
-        INSTALLER_FILENAME: VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
-        PACKAGE_ID: dougcunha.VsExtensionsTool # Adjust if your installer publisher is different
       run: |
-        echo "Starting Winget publish process..."
-        echo "App Version: $env:APP_VERSION"
-        echo "Installer Filename: $env:INSTALLER_FILENAME"
-        echo "Package ID: $env:PACKAGE_ID"
-
-        # Install wingetcreate tool
-        dotnet tool install --global wingetcreate --version 1.6.1.0
-
-        # Construct the installer URL from GitHub Releases
-        $installerUrl = "https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/$env:INSTALLER_FILENAME"
-        echo "Installer URL: $installerUrl"
-
-        # Submit the package to Winget
-        wingetcreate submit $env:PACKAGE_ID --version $env:APP_VERSION --urls $installerUrl --token $env:WINGET_PAT
-
-        echo "Winget submission process initiated."
+        # Detect tag: from input if manual, else from GitVersion
+        if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and -not [string]::IsNullOrEmpty('${{ github.event.inputs.tag }}')) {
+          $tag = '${{ github.event.inputs.tag }}'
+        } else {
+          $tag = 'v${{ steps.gitversion.outputs.fullSemVer }}'
+        }
+        $version = $tag.TrimStart('v')
+        $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
+        wingetcreate.exe submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
+      continue-on-error: false
