@@ -103,18 +103,18 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Download WingetCreate ZIP
-      shell: bash
+    - name: Download WingetCreate
+      shell: pwsh
       run: |
-        response=$(curl -s https://api.github.com/repos/microsoft/winget-create/releases/latest)
-        url=$(echo "$response" | jq -r '.assets[] | select(.name | contains("wingetcreate.exe")) | .browser_download_url')
-        if [ -z "$url" ]; then
-          echo "Failed to find the download URL for WingetCreate."
-          echo "Response from GitHub API:"
-          echo "$response"
+        $response = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/winget-create/releases/latest"
+        $asset = $response.assets | Where-Object { $_.name -like "wingetcreate.exe" }
+        if (-not $asset) {
+          Write-Host "Failed to find the download URL for WingetCreate."
+          Write-Host "Response from GitHub API:"
+          Write-Host ($response | ConvertTo-Json -Depth 10)
           exit 1
-        fi
-        curl -sSL -o wingetcreate.exe "$url"
+        }
+        Invoke-WebRequest -Uri $asset.browser_download_url -OutFile "wingetcreate.exe"
       continue-on-error: true
 
     - name: Submit to Winget
