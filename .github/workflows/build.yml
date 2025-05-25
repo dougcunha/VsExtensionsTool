@@ -106,8 +106,8 @@ jobs:
     - name: Install WingetCreate Tool
       shell: pwsh
       run: |
-        Install-Module -Name Microsoft.WinGet.Client -Scope CurrentUser -Force
-        Install-Module -Name Microsoft.WinGet.Create -Scope CurrentUser -Force
+        dotnet tool install --global wingetcreate
+        $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
         wingetcreate --version
         if ($LASTEXITCODE -ne 0) {
           Write-Error "wingetcreate not found or not working correctly after installation."
