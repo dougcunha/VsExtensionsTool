@@ -131,6 +131,6 @@ jobs:
         }
         $version = $tag.TrimStart('v')
         $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
-        $wingetExe = "$(pwd)/wingetcreate/wingetcreate.exe"
+        $wingetExe = "$(pwd)/wingetcreate.exe"
         & $wingetExe submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
       continue-on-error: false
