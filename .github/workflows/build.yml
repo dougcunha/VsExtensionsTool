@@ -106,13 +106,16 @@ jobs:
     - name: Download WingetCreate ZIP
       shell: bash
       run: |
-        url=$(curl -s https://api.github.com/repos/microsoft/winget-create/releases/latest | jq -r '.assets[] | select(.name | contains("windows-x64.zip")) | .browser_download_url')
+        response=$(curl -s https://api.github.com/repos/microsoft/winget-create/releases/latest)
+        url=$(echo "$response" | jq -r '.assets[] | select(.name | contains("wingetcreate.exe")) | .browser_download_url')
         if [ -z "$url" ]; then
           echo "Failed to find the download URL for WingetCreate."
+          echo "Response from GitHub API:"
+          echo "$response"
           exit 1
         fi
-        curl -sSL -o wingetcreate.zip "$url"
-        unzip wingetcreate.zip -d wingetcreate
+        curl -sSL -o wingetcreate.exe "$url"
+      continue-on-error: true
 
     - name: Submit to Winget
       if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
