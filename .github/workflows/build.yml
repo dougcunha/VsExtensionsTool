@@ -118,5 +118,5 @@ jobs:
         $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
         $wingetExe = "$(pwd)/build/wingetcreate.exe"
         $packageId = "dougcunha.VsExtensionsTool"
-        & $wingetExe update --submit --token "$env:WINGET_PAT" --urls $installerUrl --version $version --prtitle "VsExtensionsTool $tag" $packageId
+        & $wingetExe update --submit --token "$env:WINGET_PAT" --urls $installerUrl --version $version --prtitle "VsExtensionsTool $tag" --out manifests $packageId
       continue-on-error: false
