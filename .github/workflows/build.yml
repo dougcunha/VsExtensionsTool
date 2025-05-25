@@ -103,14 +103,15 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Install WingetCreate Tool
+    - name: Download WingetCreate
       shell: pwsh
       run: |
-        dotnet tool install --global wingetcreate
-        $env:PATH += ";$env:USERPROFILE\.dotnet\tools"
-        wingetcreate --version
+        $wingetcreateUrl = "https://github.com/microsoft/winget-create/releases/latest/download/wingetcreate.exe"
+        Invoke-WebRequest -Uri $wingetcreateUrl -OutFile "$env:RUNNER_TEMP\wingetcreate.exe"
+        $env:PATH += ";$env:RUNNER_TEMP"
+        & "$env:RUNNER_TEMP\wingetcreate.exe" --version
         if ($LASTEXITCODE -ne 0) {
-          Write-Error "wingetcreate not found or not working correctly after installation."
+          Write-Error "wingetcreate not found or not working correctly after download."
           exit 1
         }
       continue-on-error: false
@@ -129,5 +130,5 @@ jobs:
         }
         $version = $tag.TrimStart('v')
         $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
-        wingetcreate.exe submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
+        & "$env:RUNNER_TEMP\wingetcreate.exe" submit --pr-title "VsExtensionsTool $tag" --notes "Automated submission for VsExtensionsTool $tag" --token "$env:WINGET_PAT" "$installerUrl"
       continue-on-error: false
