@@ -103,15 +103,13 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Baixar WingetCreate MSIX
-      shell: powershell
-      run: |
-        $url = "https://github.com/microsoft/winget-create/releases/latest/download/winget-create.msixbundle"
-        Invoke-WebRequest -Uri $url -OutFile winget-create.msixbundle
-    - name: Instalar o MSIX
-      shell: powershell
-      run: |
-        Add-AppxPackage .\winget-create.msixbundle
+    - uses: blauqs/actions-download-asset@v1
+      with:
+        repo: 'microsoft/winget-create'
+        version: 'latest'
+        file: 'winget-create.msixbundle'
+        out: './'
+        token: ${{ secrets.GITHUB_TOKEN }}
       continue-on-error: true
 
     - name: Submit to Winget
