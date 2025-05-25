@@ -1,0 +1,12 @@
+# Created using wingetcreate 1.9.4.0
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.9.0.schema.json
+
+PackageIdentifier: dougcunha.VsExtensionsTool
+PackageVersion: "2025.04"
+InstallerType: inno
+Installers:
+- Architecture: x64
+  InstallerUrl: https://github.com/dougcunha/VsExtensionsTool/releases/download/2025.04/VsExtensionsTool-2025.4.0.win-x64.exe
+  InstallerSha256: 5EA5DA8DA7D8893673B5FC138128EF0D5C5E89A0115AF97F9DF6EDCC048BB3E0
+ManifestType: installer
+ManifestVersion: 1.9.0
