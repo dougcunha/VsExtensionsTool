@@ -17,3 +17,4 @@ TestResults/
 *.DS_Store
 *.idea/
 *.code-workspace
+build/manifest/*

@@ -103,21 +103,3 @@ jobs:
           build/VsExtensionsTool-${{ steps.gitversion.outputs.fullSemVer }}.win-x64.exe
           VsExtensionsTool/bin/Release/net9.0/win-x64/publish/VsExtensionsTool-${{ steps.gitversion.outputs.assemblySemVer }}.win-x64.zip
 
-    - name: Publicar Manifesto Winget (auto new/update)
-      if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/'))
-      shell: pwsh
-      env:
-        WINGET_PAT: ${{ secrets.WINGET_PAT }}
-      run: |
-        if ($env:GITHUB_EVENT_NAME -eq 'workflow_dispatch' -and -not [string]::IsNullOrEmpty('${{ github.event.inputs.tag }}')) {
-          $tag = '${{ github.event.inputs.tag }}'
-        } else {
-          $tag = 'v${{ steps.gitversion.outputs.fullSemVer }}'
-        }
-        $version = $tag.TrimStart('v')
-        $installerUrl = "https://github.com/${{ github.repository }}/releases/download/$tag/VsExtensionsTool-$version.win-x64.exe"
-        $wingetExe = "$(pwd)/build/wingetcreate.exe"
-        $packageId = "dougcunha.VsExtensionsTool"
-        $prTitle = "VsExtensionsTool $tag"
-        pwsh build/winget-publish.ps1 -WingetExe $wingetExe -PackageId $packageId -InstallerUrl $installerUrl -Version $version -PrTitle $prTitle -Token $env:WINGET_PAT
-      continue-on-error: false
